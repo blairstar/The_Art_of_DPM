@@ -2,7 +2,7 @@
 
 An in-depth analysis about diffusion probabilily model
 
-It is written in Chinese. English version will be released in next month.
+It is written in Chinese. English version will be released next month.
 
 
 ## 目录
@@ -19,7 +19,7 @@ It is written in Chinese. English version will be released in next month.
    - 1.9 蒙特卡洛积分(Monte Carlo Integral)  
    - 1.10 概率密度函数的性质  
    - 1.11 贝叶斯公式(Bayes Formula)和全概率公式(Total Probability Formula)  
-   - 1.12 KL散度及其一个上限  
+   - 1.12 KL散度及其"条件上限"  
 2. 隐变量模型的复杂度及采样方法  
 	- 2.1 更复杂的概率分布  
 	- 2.2 并不困难的采样  
