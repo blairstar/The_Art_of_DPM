@@ -5,6 +5,22 @@ An in-depth analysis about diffusion probabilily model
 It is written in Chinese. English version will be released next month.
 
 
+
+#### 本文的核心特色:
+
+1. 理论上分析出数据分布$q(x)$向噪声分布$q(z_T)$转换的规律。
+
+2. 理论上证明了"优化重建项($\iint q(x)q(z_1|x)\log p(x|z_1)dxdz_1$)的本质是使$p(x|z_1)$去拟合$q(x|z_1)$"。
+
+3. 理论上证明了"优化一致项($\iint q(z_t,x)KL[q(z_{t-1}|z_t,x)\Vert p(z_{t-1}|z_t)]dz_tdx$)的本质是使$p(z_{t-1}|z_t)$去拟合$q(z_{t-1}|z_t)$"。
+
+4. 实验证明了"$q(z_{t-1}|z_t)$逆变换具备良好的抗噪性能"。
+
+5. 实验证明了"$q(z_{t-1}|z_t)$逆变换是一个压缩映射(Contraction Mapping)"。
+
+6. 实验证明了"$q(z_{t-1}|z_t)$压缩映射具有一个不动点(Fixed Point)，并且是$q(z_{t-1})$"。
+
+
 ## 目录
 
 1. 基础准备  
@@ -24,14 +40,14 @@ It is written in Chinese. English version will be released next month.
 	- 2.1 更复杂的概率分布  
 	- 2.2 并不困难的采样  
 3. 三种隐变量模型及相应的参数学习方法  
-	- 3.1. Mixture Model及EM算法  
-	- 3.2. VAE模型及其学习方法  
-	- 3.3. DPM模型及其学习方法    
+	- 3.1 Mixture Model及EM算法  
+	- 3.2 VAE模型及其学习方法  
+	- 3.3 DPM模型及其学习方法    
 		+ 3.3.1 DPM模型的形式及其Lower Bound    
 		+ 3.3.2 q概率模型和Lower Bound的简化  
 		+ 3.3.3 三种优化(预测)方式  
 		+ 3.3.4 优化MLE  
-	+ 3.4 DPM模型的进一步分析  
+	- 3.4 DPM模型的进一步分析  
 		+ 3.4.1 概括重要的结论  
 		+ 3.4.2 进一步理解目标函数  
 		+ 3.4.3 理解噪声分布向数据分布转变的过程  
