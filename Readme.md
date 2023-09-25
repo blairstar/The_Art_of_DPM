@@ -35,7 +35,11 @@ It is written in Chinese. English version will be released next month.
    - 1.9 蒙特卡洛积分(Monte Carlo Integral)  
    - 1.10 概率密度函数的性质  
    - 1.11 贝叶斯公式(Bayes Formula)和全概率公式(Total Probability Formula)  
-   - 1.12 KL散度及其"条件上限"  
+   - 1.12 KL散度及"全条件KL散度"  
+		+ 1.12.1 KL散度    
+		+ 1.12.2 全条件KL散度  
+		+ 1.12.3 KL散度的一个上限  
+		+ 1.12.4 优化全条件KL散度($KL_\mathcal{F}({q_\perp}\|p)$)   
 2. 隐变量模型的复杂度及采样方法  
 	- 2.1 更复杂的概率分布  
 	- 2.2 并不困难的采样  
