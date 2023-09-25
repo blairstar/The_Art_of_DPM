@@ -39,7 +39,7 @@ It is written in Chinese. English version will be released next month.
 		+ 1.12.1 KL散度    
 		+ 1.12.2 全条件KL散度  
 		+ 1.12.3 KL散度的一个上限  
-		+ 1.12.4 优化全条件KL散度( $KL_\mathcal{F}({q_\perp}\|p) $)   
+		+ 1.12.4 优化全条件KL散度( $KL_\mathcal{F}({q_\perp}\|p)$ )  
 2. 隐变量模型的复杂度及采样方法  
 	- 2.1 更复杂的概率分布  
 	- 2.2 并不困难的采样  
