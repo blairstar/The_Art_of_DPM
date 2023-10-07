@@ -8,17 +8,19 @@ It is written in Chinese. English version will be released next month.
 
 #### 本文的核心特色:
 
-1. 理论上分析出数据分布 $q(x)$ 向噪声分布 $q(z_T)$ 转换的规律。
+1. 深入细致剖析了DPM模型原理，以及与VAE模型、Mixture模型之间的联系。
 
-2. 理论上证明了"优化重建项($\iint q(x)q(z_1|x)\log p(x|z_1)dxdz_1$)的本质是使 $p(x|z_1)$ 去拟合 $q(x|z_1)$ "。
+2. 理论上分析出数据分布 $q(x)$ 向噪声分布 $q(z_T)$ 转换的规律。
 
-3. 理论上证明了"优化一致项($\iint q(z_t,x)KL[q(z_{t-1}|z_t,x)\Vert p(z_{t-1}|z_t)]dz_tdx$)的本质是使 $p(z_{t-1}|z_t)$ 去拟合 $q(z_{t-1}|z_t)$ "。
+3. 理论上证明了"优化重建项($\iint q(x)q(z_1|x)\log p(x|z_1)dxdz_1$)的本质是使 $p(x|z_1)$ 去拟合 $q(x|z_1)$ "。
 
-4. 实验证明了" $q(z_{t-1}|z_t)$ 逆变换具备良好的抗噪性能"。
+4. 理论上证明了"优化一致项($\iint q(z_t,x)KL[q(z_{t-1}|z_t,x)\Vert p(z_{t-1}|z_t)]dz_tdx$)的本质是使 $p(z_{t-1}|z_t)$ 去拟合 $q(z_{t-1}|z_t)$ "。
 
-5. 实验证明了" $q(z_{t-1}|z_t)$ 逆变换是一个压缩映射(Contraction Mapping)"。
+5. 实验证明了" $q(z_{t-1}|z_t)$ 逆变换具备良好的抗噪性能"。
 
-6. 实验证明了" $q(z_{t-1}|z_t)$ 压缩映射具有一个不动点(Fixed Point)，并且是 $q(z_{t-1})$ "。
+6. 实验证明了" $q(z_{t-1}|z_t)$ 逆变换是一个压缩映射(Contraction Mapping)"。
+
+7. 实验证明了" $q(z_{t-1}|z_t)$ 压缩映射具有一个不动点(Fixed Point)，并且在 $q(z_{t-1})$ 附近"。
 
 
 ## 目录
