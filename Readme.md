@@ -1,8 +1,8 @@
 # The Art of DPM
 
-An in-depth analysis about diffusion probabilily model
+An in-depth analysis about diffusion probability model
 
-It is written in Chinese. English version will be released next month.
+It is written in Chinese. English version will be released in the future.
 
 
 
