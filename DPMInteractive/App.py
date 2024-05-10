@@ -142,8 +142,8 @@ def forward_block(seq_info_state):
         with gr.Group(elem_classes="normal"):
             with gr.Row():
                 seed = gr_number("random seed", 0, 1E6, 100, 1, 0, min_width=80)
-                st_alpha = gr_number("start alpha", 0.5, 0.999, 0.98, 0.001, 3, min_width=80)
-                et_alpha = gr_number("end alpha", 0.5, 0.999, 0.98, 0.001, 3, min_width=80)
+                st_alpha = gr_number("start alpha", 0.001, 0.999, 0.98, 0.001, 3, min_width=80)
+                et_alpha = gr_number("end alpha", 0.001, 0.999, 0.98, 0.001, 3, min_width=80)
                 step = gr.Slider(label="step", value=7, minimum=2, maximum=15, step=1, min_width=80)
                 apply_button = gr.Button(value="apply", min_width=80)
         

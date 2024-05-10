@@ -12,7 +12,7 @@ def md_introduction_en():
         
         gr.Markdown(
             r"""
-            The Diffusion Probability Model[\\[1\\]](#dpm)[\\[2\\]](#ddpm) is currently the main method used in image and video generation, but due to its abstruse theory, many engineers are unable to understand it well. This article will provide a very easy-to-understand method to help readers grasp the principles of the Diffusion Model. Specifically, it will illustrate the Diffusion Model using examples of one-dimensional random variables in an interactive way, explaining several interesting properties of the Diffusion Model in an intuitive manner.
+            The Diffusion Probability Model[\[1\]](#dpm)[\[2\]](#ddpm) is currently the main method used in image and video generation, but due to its abstruse theory, many engineers are unable to understand it well. This article will provide a very easy-to-understand method to help readers grasp the principles of the Diffusion Model. Specifically, it will illustrate the Diffusion Model using examples of one-dimensional random variables in an interactive way, explaining several interesting properties of the Diffusion Model in an intuitive manner.
             
             The diffusion model is a probabilistic model. Probabilistic models mainly offer two functions: calculating the probability of a given sample appearing; and generating new samples. The diffusion model focuses on the latter aspect, facilitating the production of new samples, thus realizing the task of **generation**.
             
@@ -43,11 +43,11 @@ def md_transform_en():
             
             The first sub-transformation performs a linear transformation ($\sqrt{\alpha}X$) on the random variable $X$. According to the conclusion of the literature[\[3\]](#linear_transform), the linear transformation makes the probability distribution of $X$ **narrower and taller**, and the extent of **narrowing and heightening** is directly proportional to the value of $\alpha$. 
             
-            This can be specifically seen in Demo 1, where the first figure depicts a randomly generated one-dimensional probability distribution, and the second figure represents the probability distribution after the linear transformation. It can be observed that the curve of the third figure has become **narrower and taller** compared to the first image. Readers can experiment with different $\alpha$ to gain a more intuitive understanding.
+            This can be specifically seen in <a href="#demo_1">Demo 1</a>, where the first figure depicts a randomly generated one-dimensional probability distribution, and the second figure represents the probability distribution after the linear transformation. It can be observed that the curve of the third figure has become **narrower and taller** compared to the first image. Readers can experiment with different $\alpha$ to gain a more intuitive understanding.
             
             The second sub-transformation is **adding independent random noise**($\sqrt{1-\alpha}\epsilon$). According to the conclusion of the literature[\[4\]](#sum_conv), **adding independent random variables** is equivalent to performing convolution on the two probability distributions. Since the probability distribution of random noise is Gaussian, it is equivalent to performing a **Gaussian Blur** operation. After blurring, the original probability distribution will become smoother and more similar to the standard normal distribution. The degree of blurring is directly proportional to the noise level ($\sqrt{1-\alpha}$).
             
-            For specifics, one can see Demo 1, where the first figure is a randomly generated one-dimensional probability distribution, and the third  figure is the result after the transformation. It can be seen that the transformed probability distribution curve is smoother and there are fewer corners. The readers can test different $\alpha$ values to feel how the noise level affect the shape of the probability distribution. The last figure is the result after applying all two sub-transformations.
+            For specifics, one can see <a href="#demo_1">Demo 1</a>, where the first figure is a randomly generated one-dimensional probability distribution, and the third  figure is the result after the transformation. It can be seen that the transformed probability distribution curve is smoother and there are fewer corners. The readers can test different $\alpha$ values to feel how the noise level affect the shape of the probability distribution. The last figure is the result after applying all two sub-transformations.
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_transform_en")
     return
 
@@ -63,7 +63,7 @@ def md_likelihood_en():
             \begin{align}
                 q(z|x) &= \mathcal{N}(\sqrt{\alpha}x,\ 1-\alpha)    \tag{2.1}
             \end{align}
-            It can be understood by concrete examples in Demo 2. The third figure depict the shape of $q(z|x)$. From the figure, a uniform slanting line can be observed. This implies that the mean of $q(z|x)$ is linearly related to x, and the variance is fixed. The magnitude of $\alpha$ will determine the width and incline of the slanting line.
+            It can be understood by concrete examples in <a href="#demo_2">Demo 2</a>. The third figure depict the shape of $q(z|x)$. From the figure, a uniform slanting line can be observed. This implies that the mean of $q(z|x)$ is linearly related to x, and the variance is fixed. The magnitude of $\alpha$ will determine the width and incline of the slanting line.
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_likelihood_en")
     return
 
@@ -103,13 +103,13 @@ def md_posterior_en():
             <li>When the variance of the Gaussian function is large (large noise), or when $q(x)$ changes drastically, the shape of $q(x|z)$ will be more complex, and greatly differ from a Gaussian function, which makes it difficult to model and learn.</li>
             </ul>
             
-            The specifics can be seen in Demo 2. The fourth figure present the shape of the posterior $q(x|z)$, which shows an irregular shape and resembles a curved and uneven line. As $\alpha$ increases (noise decreases), the curve tends to be uniform and straight. Readers can adjust different $\alpha$ values and observe the relationship between the shape of posterior and the level of noise. In the last figure, the $\textcolor{blue}{\text{blue dash line}}$ represents $q(x)$, the $\textcolor{green}{\text{green dash line}}$ represents <b>GaussFun</b> in the equation 3.4, and the $\textcolor{orange}{\text{orange curve}}$ represents the result of multiplying the two function and normalizing it, which is the posterior probability $q(x|z=fixed)$ under a fixed z condition. Readers can adjust different values of z to observe how the fluctuation of $q(x)$ affect the shape of the posterior probability $q(x|z)$.
+            The specifics can be seen in <a href="#demo_2">Demo 2</a>. The fourth figure present the shape of the posterior $q(x|z)$, which shows an irregular shape and resembles a curved and uneven line. As $\alpha$ increases (noise decreases), the curve tends to be uniform and straight. Readers can adjust different $\alpha$ values and observe the relationship between the shape of posterior and the level of noise. In the last figure, the $\textcolor{blue}{\text{blue dash line}}$ represents $q(x)$, the $\textcolor{green}{\text{green dash line}}$ represents <b>GaussFun</b> in the equation 3.4, and the $\textcolor{orange}{\text{orange curve}}$ represents the result of multiplying the two function and normalizing it, which is the posterior probability $q(x|z=fixed)$ under a fixed z condition. Readers can adjust different values of z to observe how the fluctuation of $q(x)$ affect the shape of the posterior probability $q(x|z)$.
             
             The posterior $q(x|z)$ under two special states are worth considering.
             <ul>
-            <li>As $\alpha \to 0$, the variance of <b>GaussFun</b> tends to <b>$\infty$</b>, and $q(x|z)$ for different $z$ almost become identical, and almost the same as $q(x)$. Readers can set $\alpha$ to 0.001 in Demo 2 to observe the specific results.</li>
+            <li>As $\alpha \to 0$, the variance of <b>GaussFun</b> tends to <b>$\infty$</b>, and $q(x|z)$ for different $z$ almost become identical, and almost the same as $q(x)$. Readers can set $\alpha$ to 0.001 in <a href="#demo_2">Demo 2</a> to observe the specific results.</li>
                 
-            <li>As $\alpha \to 1$, the variance of <b>GaussFun</b> tends to <b>$0$</b>, The $q(x|z)$ for different $z$ values contract into a series of <em>Dirac delta functions</em> with different offsets equalling to $z$. However, there are some exceptions. When there are regions where $q(x)$ is zero, the corresponding $q(x|z)$ will no longer be a Dirac <em>delta function</em>, but a zero function. Readers can set $\alpha$ to 0.999 in Demo 2 to observe the specific results.</li>
+            <li>As $\alpha \to 1$, the variance of <b>GaussFun</b> tends to <b>$0$</b>, The $q(x|z)$ for different $z$ values contract into a series of <em>Dirac delta functions</em> with different offsets equalling to $z$. However, there are some exceptions. When there are regions where $q(x)$ is zero, the corresponding $q(x|z)$ will no longer be a Dirac <em>delta function</em>, but a zero function. Readers can set $\alpha$ to 0.999 in <a href="#demo_2">Demo 2</a> to observe the specific results.</li>
             </ul>
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_posterior_en")
     return
@@ -125,11 +125,11 @@ def md_forward_process_en():
             r"""
             For any arbitrary data distribution $q(x)$, the transform(equation 2.1) in section 2 can be continuously applied(equation 4.1~4.4). As the number of transforms increases, the output probability distribution will become increasingly closer to the standard normal distribution. For more complex data distributions, more iterations or larger noise are needed.
             
-            Specific details can be observed in Demo3. The first figure illustrates a randomly generated one-dimensional probability distribution. After seven transforms, this distribution looks very similar to the standard normal distribution. The degree of similarity increases with the number of iterations and the level of the noise. Given the same degree of similarity, fewer transforms are needed if the noise added at each step is larger (smaller $\alpha$ value). Readers can try different $\alpha$ values and numbers of transforms to see how similar the final probability distribution is.
+            Specific details can be observed in <a href="#demo_3_1">Demo 3.1</a>. The first figure illustrates a randomly generated one-dimensional probability distribution. After seven transforms, this distribution looks very similar to the standard normal distribution. The degree of similarity increases with the number of iterations and the level of the noise. Given the same degree of similarity, fewer transforms are needed if the noise added at each step is larger (smaller $\alpha$ value). Readers can try different $\alpha$ values and numbers of transforms to see how similar the final probability distribution is.
             
             The complexity of the initial probability distribution tends to be high, but as the number of transforms increases, the complexity of the probability distribution $q(z_t)$ will decrease. As concluded in section 4, a more complex probability distribution corresponds to a more complex posterior probability distribution. Therefore, in order to ensure that the posterior probability distribution is more similar to the Conditional Gaussian function (easier to learn), a larger value of $\alpha$ (smaller noise) should be used in the initial phase, and a smaller value of $\alpha$ (larger noise) can be appropriately used in the later phase to accelerate the transition to the standard normal distribution.
             
-            In the example of Demo 3.1, it can be seen that as the number of transforms increases, the corners of $q(z_t)$ become fewer and fewer. Meanwhile, the slanting lines in the plot of the posterior probability distribution $q(z_{t-1}|z_t)$ become increasingly straight and uniform, resembling more and more the conditional Gaussian distribution. 
+            In the example of <a href="#demo_3_1">Demo 3.1</a>, it can be seen that as the number of transforms increases, the corners of $q(z_t)$ become fewer and fewer. Meanwhile, the slanting lines in the plot of the posterior probability distribution $q(z_{t-1}|z_t)$ become increasingly straight and uniform, resembling more and more the conditional Gaussian distribution. 
 
             \begin{align}
                 Z_1   &= \sqrt{\alpha_1} X + \sqrt{1-\alpha_1}\epsilon_1 			\tag{4.1}   \newline
@@ -160,7 +160,7 @@ def md_forward_process_en():
                 q(z_T|x) &= \mathcal{N}(0.00635\ x,\ 0.99998)    \tag{4.9}
             \end{align}
             
-            If considering only $q(z_T)$, a single transformation can also be used, which is as follows:
+            If considering only marginal distribution $q(z_T)$, a single transformation can also be used, which is as follows:
             \begin{align}
                 Z_T = \sqrt{0.0000403}\ X + \sqrt{1-0.0000403}\ \epsilon = 0.00635\ X + 0.99998\ \epsilon 			 \tag{4.10}
             \end{align}
@@ -179,7 +179,7 @@ def md_backward_process_en():
             r"""
             If the final probability distribution $q(z_T)$ and the posterior probabilities of each transform $q(x|z),q(z_{t-1}|z_t)$ are known, the data distribution $q(x)$ can be recovered through the Bayes Theorem and the Law of Total Probability, as shown in equations 5.1~5.4. When the final probability distribution $q(z_T)$ is very similar to the standard normal distribution, the standard normal distribution can be used as a substitute.
             
-            Specifics can be seen in Demo 3.2. In the example, $q(z_T)$ substitutes $\mathcal{N}(0,1)$, and the error magnitude is given through JS Divergence. The restored probability distribution $q(z_t)$ and $q(x)$ are identified by the $\textcolor{green}{\text{green curve}}$, and the original probability distribution is identified by the $\textcolor{blue}{\text{blue curve}}$. It can be observed that the data distribution $q(x)$ can be well restored, and the error (JS Divergence) will be smaller than the error caused by the standard normal distribution replacing $q(z_T)$.
+            Specifics can be seen in <a href="#demo_3_2">Demo 3.2</a>. In the example, $q(z_T)$ substitutes $\mathcal{N}(0,1)$, and the error magnitude is given through JS Divergence. The restored probability distribution $q(z_t)$ and $q(x)$ are identified by the $\textcolor{green}{\text{green curve}}$, and the original probability distribution is identified by the $\textcolor{blue}{\text{blue curve}}$. It can be observed that the data distribution $q(x)$ can be well restored, and the error (JS Divergence) will be smaller than the error caused by the standard normal distribution replacing $q(z_T)$.
             \begin{align}
                 q(z_{T-1}) &= \int q(z_{T-1},z_T)dz_T = \int q(z_{T-1}|z_T)q(z_T)dz_T               	    \tag{5.1}   \newline
                            & \dots	                                                                        \notag      \newline
@@ -188,15 +188,15 @@ def md_backward_process_en():
                 q(z_1)     &= \int q(z_1,z_2) dz_1    = \int q(z_1|z_2)q(z_2)dz_2                           \tag{5.3}   \newline
                 q(x)       &= \int q(x,z_1) dz_1      = \int q(x|z_1)q(z_1)dz_1                             \tag{5.4}   \newline
             \end{align}
-            In this article, the aforementioned transform is referred to as the <b>Posterior Transform</b>. For example, in equation 5.4, the input of the transform is the probability distribution function $q(z_1)$, and the output is the probability distribution function $q(x)$.The entire transform is determined by the posterior $q(x|z_1)$. This transform can also be considered as the linear weighted sum of a set of basis functions, where the basis functions are $q(x|z_1)$ under different $z_1$, and the weights of each basis function are $q(z_1)$. Some interesting properties of this transform will be introduced in Section 7.
+            In this article, the aforementioned transform is referred to as the <b>Posterior Transform</b>. For example, in equation 5.4, the input of the transform is the probability distribution function $q(z_1)$, and the output is the probability distribution function $q(x)$.The entire transform is determined by the posterior $q(x|z_1)$. This transform can also be considered as the linear weighted sum of a set of basis functions, where the basis functions are $q(x|z_1)$ under different $z_1$, and the weights of each basis function are $q(z_1)$. Some interesting properties of this transform will be introduced in <a href="#posterior_transform">Section 7</a>.
             
-            In Section 3, we have considered two special posterior probability distributions. Next, we analyze their corresponding <em>posterior transforms</em>.
+            In <a href="#posterior">Section 3</a>, we have considered two special posterior probability distributions. Next, we analyze their corresponding <em>posterior transforms</em>.
             <ul>
-                <li> When $\alpha \to 0$, the $q(x|z)$ for different $z$ are almost the same as $q(x)$. In other words, the basis functions of linear weighted sum are almost the same. In this state, no matter how the input changes, the output of the transformation is always $q(x)$."</li>
+                <li> When $\alpha \to 0$, the $q(x|z)$ for different $z$ are almost the same as $q(x)$. In other words, the basis functions of linear weighted sum are almost the same. In this state, no matter how the input changes, the output of the transformation is always $q(x)$.</li>
                 <li> When $\alpha \to 1$, the $q(x|z)$ for different $z$ values becomes a series of Dirac delta functions and zero functions. In this state, as long as the <em>support set</em> of the input distribution is included in the <em>support set</em> of $q(x)$, the output of the transformation will remain the same with the input.</li>
             </ul>
             
-            In Section 5, it is mentioned that the 1000 transformations used in the DDPM[\[2\]](#ddpm) can be represented using a single transformation
+            In <a href="#forward_process">Section 4</a>, it is mentioned that the 1000 transformations used in the DDPM[\[2\]](#ddpm) can be represented using a single transformation
             \begin{align}
                 Z_T = \sqrt{0.0000403}\ X + \sqrt{1-0.0000403}\ \epsilon = 0.00635\ X + 0.99998\ \epsilon 			 \tag{5.5}
             \end{align}
@@ -204,6 +204,8 @@ def md_backward_process_en():
             Since $\\alpha=0.0000403$ is very small, the corresponding standard deviation of GaussFun (Equation 3.4) reaches 157.52. However, the range of $X$ is limited within $[-1, 1]$, which is far smaller than the standard deviation of GaussFun. Within the range of $x \\in [-1, 1]$, GaussFun should be close to a constant, showing little variation. Therefore, the $q(x|z_T)$ corresponding to different $z_T$ are almost the same as $q(x)$. In this state, the posterior transform corresponding to $q(x|z_T)$ does not depend on the input distribution, the output distribution will always be $q(x)$.
             
             <b>Therefore, theoretically, in the DDPM model, it is not necessary to use the standard normal distribution to replace $q(z_T)$. Any other arbitrary distributions can also be used as a substitute.</b>
+            
+            Readers can conduct a similar experiment themselves. In <a href="#demo_3_1">Demo 3.1</a>, set <em>start_alpha</em> to 0.25, <em>end_alpha</em> to 0.25, and <em>step</em> to 7. At this point, $q(z_7)=\sqrt{0.000061}X + \sqrt{1-0.000061} \epsilon$, which is roughly equivalent to DDPM's $q(z_T)$. Click on <b>apply</b> to perform the forward transform (plotted using $\textcolor{blue}{\text{blue curves}}$), which prepares for the subsequent restoring process. In <a href="#demo_3_2">Demo 3.2</a>, set the <em>noise_ratio</em> to 1, introducing 100% noise into the <em>tail distribution</em> $q(z_7)$. Changing the value of <em>nose_random_seed</em> will change the distribution of noise. Deselect <em>backward_pdf</em> to reduce screen clutter. Click on <b>apply</b> to restore $q(x)$ through posterior transform. You will see that, no matter what the shape of input $q(z_7)$ may be, the restored $q(x)$ is always exactly the same as the original $q(x)$. The JS Divergence is zero. The restoration process is plotted using a $\textcolor{red}{\text{red curve}}$.
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_backward_process_en")
     return
 
@@ -216,13 +218,13 @@ def md_fit_posterior_en():
 
         gr.Markdown(
             r"""
-            From the front part of Section 4, it is known that the posterior probability distributions are unknown and related to $q(x)$. Therefore, in order to recover the data distribution or sample from it, it is necessary to learn and estimate each posterior probability distribution.
+            From the front part of <a href="#posterior">Section 3</a>, it is known that the posterior probability distributions are unknown and related to $q(x)$. Therefore, in order to recover the data distribution or sample from it, it is necessary to learn and estimate each posterior probability distribution.
             
-            From the latter part of Section 4, it can be understood that when certain conditions are met, each posterior probability distribution $q(x|z), q(z_{t-1}|z_t)$ approximates the Gaussian probability distribution. Therefore, by constructing a set of conditional Gaussian probability models $p(x|z), p(z_{t-1}|z_t)$, we can learn to fit the corresponding $q(x|z), q(z_{t-1}|z_t)$.
+            From the latter part of <a href="#posterior">Section 3</a>, it can be understood that when certain conditions are met, each posterior probability distribution $q(x|z), q(z_{t-1}|z_t)$ approximates the Gaussian probability distribution. Therefore, by constructing a set of conditional Gaussian probability models $p(x|z), p(z_{t-1}|z_t)$, we can learn to fit the corresponding $q(x|z), q(z_{t-1}|z_t)$.
             
-            Due to the limitations of the model's representative and learning capabilities, there will be certain errors in the fitting process, which will further impact the accuracy of restored $q(x)$. The size of the fitting error is related to the complexity of the posterior probability distribution. As can be seen from Section 4, when $q(x)$ is more complex or the added noise is large, the posterior probability distribution will be more complex, and it will differ greatly from the Gaussian distribution, thus leading to fitting errors and further affecting the restoration of $q(x)$.
+            Due to the limitations of the model's representative and learning capabilities, there will be certain errors in the fitting process, which will further impact the accuracy of restored $q(x)$. The size of the fitting error is related to the complexity of the posterior probability distribution. As can be seen from <a href="#posterior">Section 3</a>, when $q(x)$ is more complex or the added noise is large, the posterior probability distribution will be more complex, and it will differ greatly from the Gaussian distribution, thus leading to fitting errors and further affecting the restoration of $q(x)$.
             
-            Refer to Demo 3.3 for the specifics. The reader can test different $q(x)$ and $\alpha$, observe the fitting degree of the posterior probability distribution $q(z_{t-1}|z_t)$ and the accuracy of restored $q(x)$. The restored probability distribution is ploted with $\textcolor{orange}{\text{orange}}$, and the error is also measured by JS divergence.
+            Refer to <a href="#demo_3_3">Demo 3.3</a> for the specifics. The reader can test different $q(x)$ and $\alpha$, observe the fitting degree of the posterior probability distribution $q(z_{t-1}|z_t)$ and the accuracy of restored $q(x)$. The restored probability distribution is ploted with $\textcolor{orange}{\text{orange}}$, and the error is also measured by JS divergence.
              
             Regarding the objective function for fitting, similar to other probability models, the cross-entropy loss can be optimized to make $p(z_{t-1}|z_t)$ approaching $q(z_{t-1}|z_t)$. Since $(z_{t-1}|z_t)$ is a conditional probability, it is necessary to fully consider all conditions. This can be achieved by averaging the cross-entropy corresponding to each condition weighted by the probability of each condition happening. The final form of the loss function is as follows.
             \begin{align}
@@ -299,12 +301,12 @@ def md_posterior_transform_en():
                 q(x) &= \int q(x,z) dz = \int q(x|z)q(z)dz      \tag{7.1}
             \end{align}
             
-            Through extensive experiments with one-dimensional random variables, it was found that the <b>Posterior Transform</b> exhibits the characteristics of <b>Contraction Mapping</b>. This means that, for any two probability distributions $q_{i1}(z) and $q_{i2}(z), after posterior transform, we get $q_{o1}(x)$ and $q_{o2}(x)$. The distance between $q_{o1}(x)$ and $q_{o2}(x)$ is always less than the distance between $q_{i1}(x)$ and $q_{i2}(x)$. Here, the distance can be measured using JS divergence or Total Variance. Furthermore, the contractive ratio of this contraction mapping is positively related to the size of the added noise.
+            Through extensive experiments with one-dimensional random variables, it was found that the <b>Posterior Transform</b> exhibits the characteristics of <b>Contraction Mapping</b>. This means that, for any two probability distributions $q_{i1}(z)$ and $q_{i2}(z)$, after posterior transform, we get $q_{o1}(x)$ and $q_{o2}(x)$. The distance between $q_{o1}(x)$ and $q_{o2}(x)$ is always less than the distance between $q_{i1}(x)$ and $q_{i2}(x)$. Here, the distance can be measured using JS divergence or Total Variance. Furthermore, the contractive ratio of this contraction mapping is positively related to the size of the added noise.
             \begin{align}
                 dist(q_{o1}(z),\ q_{o2}(z)) < dist(q_{i1}(x),\ q_{i2}(x))                   \tag{7.2}
             \end{align}
     
-            Readers can refer to Demo 4.1, where the first three figure present a transform process. The first figure is an arbitrary data distribution $q(x)$, the third figure is the transformed probability distribution, and second figure is the posterior probability distribution $q(x|z)$. You can change the random seed to generate a new data distribution$q(x)$, and adjust the value of $\alpha$ to introduce different degrees of noise.
+            Readers can refer to <a href="#demo_4_1">Demo 4.1</a>, where the first three figure present a transform process. The first figure is an arbitrary data distribution $q(x)$, the third figure is the transformed probability distribution, and second figure is the posterior probability distribution $q(x|z)$. You can change the random seed to generate a new data distribution$q(x)$, and adjust the value of $\alpha$ to introduce different degrees of noise.
 
             The last two figures show contraction of the transform. The fourth figure displays two randomly generated input distributions and their distance, $div_{in}$. The fifth figure displays the two output distributions after transform, with the distance denoted as $div_{out}$.
             
@@ -312,7 +314,7 @@ def md_posterior_transform_en():
             
             According to the Banach fixed-point theorem<a href="#fixed_point">[5]</a>, a contraction mapping has a unique fixed point (converged point). That is to say, for any input distribution, the <b>Posterior Transform</b> can be applied continuously through iterations, and as long as the number of iterations is sufficient, the final output would be the same distribution. After a large number of one-dimensional random variable experiments, it was found that the fixed point (converged point) is <b>located near $q(x)$</b>. Also, the location is related to the value of $\alpha$; the smaller $\alpha$ (larger noise), the closer it is. 
             
-            Readers can refer to Demo 4.2, which illustrates an example of applying posterior transform iteratively. Choose an appropriate number of iterations, and click on the button of <em>Apply</em>, and the iteration process will be draw step by step. Each subplot shows the transformed output distribution($\textcolor{green}{\text{green curve}}$) from each transform, with the reference distribution $q(x)$ expressed as a $\textcolor{blue}{\text{blue curve}}$, as well as the distance $div$ between the output distribution and $q(x)$. It can be seen that as the number of iterations increases, the output distribution becomes more and more similar to $q(x)$, and will eventually stabilize near $q(x)$. For more complicated distributions, more iterations or greater noise may be required. The maximum number of iterations can be set to tens of thousands, but it'll take longer.
+            Readers can refer to <a href="#demo_4_2">Demo 4.2</a>, which illustrates an example of applying posterior transform iteratively. Choose an appropriate number of iterations, and click on the button of <em>Apply</em>, and the iteration process will be draw step by step. Each subplot shows the transformed output distribution($\textcolor{green}{\text{green curve}}$) from each transform, with the reference distribution $q(x)$ expressed as a $\textcolor{blue}{\text{blue curve}}$, as well as the distance $div$ between the output distribution and $q(x)$. It can be seen that as the number of iterations increases, the output distribution becomes more and more similar to $q(x)$, and will eventually stabilize near $q(x)$. For more complicated distributions, more iterations or greater noise may be required. The maximum number of iterations can be set to tens of thousands, but it'll take longer.
             
             For the one-dimensional discrete case, $q(x|z)$ is discretized into a matrix (denoted as $Q_{x|z}$), $q(z)$ is discretized into a vector (denoted as $\boldsymbol{q_i}$). The integration operation $\int q(x|z)q(z)dz$ is discretized into a **matrix-vector** multiplication operation, thus the posterior transform can be written as
             \begin{align}
@@ -321,7 +323,7 @@ def md_posterior_transform_en():
                     & \dots &                                                                                             \notag          \newline
                 \boldsymbol{q_o} &= (Q_{x|z})^n\ \boldsymbol{q_i} &         \quad\quad        &\text{n iteration}         \tag{7.5}       \newline
             \end{align}
-            In order to better understand the property of the transform, the matrix $(Q_{x|z})^n$ is also plotted in Demo 4.2. From the demo we can see that, as the iterations converge, the row vectors of the matrix $(Q_{x|z})^n$ will become a constant vector, that is, all components of the vector will be the same, which will appear as a horizontal line in the denisty plot.
+            In order to better understand the property of the transform, the matrix $(Q_{x|z})^n$ is also plotted in <a href="#demo_4_2">Demo 4.2</a>. From the demo we can see that, as the iterations converge, the row vectors of the matrix $(Q_{x|z})^n$ will become a constant vector, that is, all components of the vector will be the same, which will appear as a horizontal line in the denisty plot.
             
             <center> <img id="en_fig2" src="file/fig2.png" width="960" style="margin-top:12px"/> </center>
             <center> Figure 2: Only one component in support </center>
@@ -388,9 +390,9 @@ def md_posterior_transform_en():
             \end{align}
             Wherein, $q(z)$ is the ideal input distribution, $q(x)$ is the ideal output distribution, $q_i(x)$ is any arbitrary input distribution, and $q_o(x)$ is the output distribution obtained after transforming $q_i(z)$. 
             
-            The above equation indicates that the distance between the output distribution $q_o(x)$ and the ideal output distribution q(x) will always be <b>less than</b> the distance between the input distribution $q_i(z)$ and the ideal input distribution q(x). Hence, the <em>posterior transform</em> has certain resistance to noise. This means that during the process of restoring $q(x)$(Section 5), even if the <em>tail distribution</em> $q(z_T)$ contains some error, the error of the outputed distribution $q(x)$ will be smaller than the error of input after undergoing a series of transform.
+            The above equation indicates that the distance between the output distribution $q_o(x)$ and the ideal output distribution q(x) will always be <b>less than</b> the distance between the input distribution $q_i(z)$ and the ideal input distribution q(x). Hence, the <em>posterior transform</em> has certain resistance to noise. This means that during the process of restoring $q(x)$(<a href="#backward_process">Section 5</a>), even if the <em>tail distribution</em> $q(z_T)$ contains some error, the error of the outputed distribution $q(x)$ will be smaller than the error of input after undergoing a series of transform.
             
-            Refer specifically to Demo 3.2, where by increasing the value of the <b>noise ratio</b>, noise can be added to the <em>tail distribution</em> $q(z_T)$. Clicking the "apply" button will gradually draw out the restoring process, with the restored distribution represented by a $\textcolor{red}{\text{red curve}}$, and the error size will be computed by the JS divergence. You will see that the error of restored $q(x)$ is always less than the error of $q(z_T)$.
+            Refer specifically to <a href="#demo_3_2">Demo 3.2</a>, where by increasing the value of the <b>noise ratio</b>, noise can be added to the <em>tail distribution</em> $q(z_T)$. Clicking the "apply" button will gradually draw out the restoring process, with the restored distribution represented by a $\textcolor{red}{\text{red curve}}$, and the error size will be computed by the JS divergence. You will see that the error of restored $q(x)$ is always less than the error of $q(z_T)$.
             
             From the above discussion, we know that the smaller the $\alpha$ (the larger the noise used in the transform process), the greater the contractive ratio of the contraction mapping, and thus, the stronger the ability to resist noise.
             
@@ -405,7 +407,7 @@ def md_deconvolution_en():
     with gr.Accordion(label=title, elem_classes="first_md", elem_id="deconvolution"):
         gr.Markdown(
             r"""
-            As mentioned in the section 2, the transformation of Equation 2.1 can be divided into two sub-transformations, the first one being a linear transformation and the second being adding independent Gaussian noise. The linear transformation is equivalent to a scaling transform of the probability distribution, so it has an inverse transformation. Adding independent Gaussian noise is equivalent to the execution of a convolution operation on the probability distribution, which can be restored through <b>deconvolution</b>. Therefore, theoretically, the data distribution $q(x)$ can be recovered from the final probability distribution $q(z_T)$ through <b>inverse linear transform</b> and <b>deconvolution</b>.
+            As mentioned in the <a href="#introduction">Section 1</a>, the transform of Equation 2.1 can be divided into two sub-transforms, the first one being a linear transform and the second being adding independent Gaussian noise. The linear transform is equivalent to a scaling transform of the probability distribution, so it has an inverse transformation. Adding independent Gaussian noise is equivalent to the execution of a convolution operation on the probability distribution, which can be restored through <b>deconvolution</b>. Therefore, theoretically, the data distribution $q(x)$ can be recovered from the final probability distribution $q(z_T)$ through <b>inverse linear transform</b> and <b>deconvolution</b>.
             
             However, in actuality, some problems do exist. Due to the extreme sensitivity of deconvolution to errors, having high input sensitivity, even a small amount of input noise can lead to significant changes in output[\[11\]](#deconv_1)[\[12\]](#deconv_2). Meanwhile, in the diffusion model, the standard normal distribution is used as an approximation to replace $q(z_T)$, thus, noise is introduced at the initial stage of recovery. Although the noise is relatively small, because of the sensitivity of deconvolution, the noise will gradually amplify, affecting the recovery.
             
@@ -448,6 +450,8 @@ def md_reference_en():
             <a id="mc_basic_t7" href="http://galton.uchicago.edu/~lalley/Courses/312/MarkovChains.pdf"> [13] Markov Chain:Basic Theory - Theorem 7 </a>
             
             <a id="mc_basic_d4" href="http://galton.uchicago.edu/~lalley/Courses/312/MarkovChains.pdf"> [14] Markov Chain:Basic Theory - Definition 4 </a>
+            
+            <a id="vdm" href="https://arxiv.org/pdf/2107.00630"> [15] Variational Diffusion Models </a>
              
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_reference_en")
 
@@ -461,7 +465,7 @@ def md_about_en():
 
         gr.Markdown(
             r"""
-            <b>APP</b>: This APP is developed using Gradio and deployed on HuggingFace. Due to limited resources (2 cores, 16G memory), the response may be slow. For a better experience, it is recommended to clone the source code from <a href="https://github.com/blairstar/The_Art_of_DPM">github</a> and run it locally. This program only relies on Gradio, SciPy, and Matplotlib.
+            <b>APP</b>: This Web APP is developed using Gradio and deployed on HuggingFace. Due to limited resources (2 cores, 16G memory), the response may be slow. For a better experience, it is recommended to clone the source code from <a href="https://github.com/blairstar/The_Art_of_DPM">github</a> and run it locally. This program only relies on Gradio, SciPy, and Matplotlib.
             
             <b>Author</b>: Zhenxin Zheng, Senior computer vision engineer with ten years of algorithm development experience, Formerly employed by Tencent and JD.com, currently focusing on image and video generation.
             

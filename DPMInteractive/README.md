@@ -1,4 +1,3 @@
-
 <center>
 	<h1 style="display:block">
 		Understanding Diffusion Probability Model<span style='color: orange'>&nbsp;Interactively </span>
@@ -6,9 +5,9 @@
 </center>
 </br> </br> </br>
 
-This is a Web App which provides a distinctive introduction about the Diffusion Probability Model with interactive examples.
+This is a Web App which provides a special introduction about the Diffusion Probability Model with interactive demos.
 
-How to use
+### How to run
 <ol> 
 	<li> Open <a href="https://huggingface.co/spaces/blairzheng/DPMInteractive">HuggingFace space</a> in browser directly. </li>
 	<li> Running locally, recommended.
