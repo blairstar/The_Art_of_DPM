@@ -3,14 +3,14 @@
 
 async function write_markdown() {
     let names = ["introduction", "transform", "likelihood", "posterior", "forward_process", "backward_process",
-                 "fit_posterior", "posterior_transform", "deconvolution", "reference", "about"];
+                 "fit_posterior", "posterior_transform", "deconvolution", "cond_kl", "proof_ctr", "reference", "about"];
     // names = names.slice(-1)
     
     let data = await fetch("file/data.json").then(response => response.json());
     
     names.forEach((name, index) => {
         let elem_zh = document.getElementById("md_" + name + "_zh");
-        if (elem_zh != null) { data[name+"_zh"] = elem_zh.outerHTML; }
+        if (elem_zh != null) { data[name+"_zh"] = elem_zh.outerHTML; console.log(name);}
 
         const elem_en = document.getElementById("md_" + name + "_en");
         if (elem_en != null) { data[name+"_en"] = elem_en.outerHTML; }
@@ -25,7 +25,7 @@ async function write_markdown() {
 
 async function insert_markdown() {
     let names = ["introduction", "transform", "likelihood", "posterior", "forward_process", "backward_process", 
-                 "fit_posterior", "posterior_transform", "deconvolution", "reference", "about"];
+                 "fit_posterior", "posterior_transform", "deconvolution", "cond_kl", "proof_ctr", "reference", "about"];
 
     let data = await fetch("file/data.json").then(response => response.json());
     
@@ -54,7 +54,7 @@ async function insert_markdown() {
 
 function control_language() {
     const names = ["introduction", "transform", "likelihood", "posterior", "forward_process",
-        "backward_process", "fit_posterior", "posterior_transform", "deconvolution", "reference", "about"];
+        "backward_process", "fit_posterior", "posterior_transform", "deconvolution", "cond_kl", "proof_ctr", "reference", "about"];
 
     var is_zh = document.getElementById("switch_language").checked;
     for (let i = 0; i < names.length; i++) {
@@ -142,6 +142,7 @@ function katex_render(name) {
     if (elem == null) { return; }
     var text = elem.innerText.replaceAll("{underline}", "_");
     text = "\\begin{align}\n" + text + "\n\\end{align}";
+    
     katex.render(text, elem, {displayMode: true});
 }
 
@@ -150,7 +151,13 @@ function insert_special_formula() {
     katex_render("zh_fit_0");
     katex_render("zh_fit_1");
     katex_render("zh_fit_2");
+    katex_render("zh_cond_kl_1");
+    katex_render("zh_cond_kl_2");
+    katex_render("zh_cond_kl_3");
     katex_render("en_fit_0");
     katex_render("en_fit_1");
     katex_render("en_fit_2");
+    katex_render("en_cond_kl_1");
+    katex_render("en_cond_kl_2");
+    katex_render("en_cond_kl_3");
 }

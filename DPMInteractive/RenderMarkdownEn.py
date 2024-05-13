@@ -234,7 +234,7 @@ def md_fit_posterior_en():
             
             KL divergence can also be optimized as the objective function. KL divergence and cross-entropy are equivalent[\\[10\\]](#ce_kl)
             <span id="en_fit_0">
-                loss &= \int q(z_t) KL(q(z_{t-1}|z_t)\|\textcolor{blue}{p(z_{t-1}|z_t)})dz_t                                                             \tag{6.3}      \newline
+                loss &= \int q(z_t) KL(q(z_{t-1}|z_t) \Vert \textcolor{blue}{p(z_{t-1}|z_t)})dz_t                                                             \tag{6.3}      \newline
                      &= \int q(z_t) \int q(z_{t-1}|z_t) \frac{q(z_{t-1}|z_t)}{\textcolor{blue}{p(z_{t-1}|z_t)}} dz_{t-1} dz_t                            \tag{6.4}      \newline 
                      &= -\int q(z_t)\ \underbrace{\int q(z_{t-1}|z_t) \log \textcolor{blue}{p(z_{t-1}|z_t)}dz_{t-1}}{underline}{\text{Cross Entropy}}\ dz_t + \underbrace{\int q(z_t) \int q(z_{t-1}|z_t) \log q(z_{t-1}|z_t)}{underline}{\text{Is Constant}} dz  \tag{6.5}
             </span>
@@ -258,8 +258,8 @@ def md_fit_posterior_en():
                      &\quad - \iint \int q(x)q(z_{t-1}, z_t|x) \log \textcolor{blue}{p(z_{t-1}|z_t)}dxdz_{t-1}dz_t - \textcolor{orange}{C_1}                                                \tag{6.11}          \newline
                      &= \iint \int q(x)q(z_{t-1},z_t|x) \log \frac{q(z_{t-1}|z_t,x)}{\textcolor{blue}{p(z_{t-1}|z_t)}}dxdz_{t-1}dz_t - \textcolor{orange}{C_1}                              \tag{6.12}          \newline
                      &= \iint q(x)q(z_t|x)\int q(z_{t-1}|z_t,x) \log \frac{q(z_{t-1}|z_t,x)}{\textcolor{blue}{p(z_{t-1}|z_t)}}dz_{t-1}\ dz_xdz_t - \textcolor{orange}{C_1}                  \tag{6.13}          \newline
-                     &= \iint \ q(x)q(z_t|x) KL[q(z_{t-1}|z_t,x)\|\textcolor{blue}{p(z_{t-1}|z_t)}]dxdz_t - \textcolor{orange}{C_1}                                                         \tag{6.14}          \newline
-                     &\propto \iint \ q(x)q(z_t|x) KL[q(z_{t-1}|z_t,x)\|\textcolor{blue}{p(z_{t-1}|z_t)}]dxdz_t                                                                             \tag{6.15}          \newline
+                     &= \iint \ q(x)q(z_t|x) KL[q(z_{t-1}|z_t,x) \Vert \textcolor{blue}{p(z_{t-1}|z_t)}]dxdz_t - \textcolor{orange}{C_1}                                                         \tag{6.14}          \newline
+                     &\propto \iint \ q(x)q(z_t|x) KL(q(z_{t-1}|z_t,x) \Vert \textcolor{blue}{p(z_{t-1}|z_t)})dxdz_t                                                                             \tag{6.15}          \newline
             \end{align}
 
             In the above formula, the term $C_1$ is a fixed value, which does not contain parameters to be optimized. Here, $q(x)$ is a fixed probability distribution, and $q(z_{t-1}|z_t)$ is also a fixed probability distribution, whose specific form is determined by $q(x)$ and the coefficient $\alpha$.
@@ -276,15 +276,15 @@ def md_fit_posterior_en():
             
             Based on the conclusion of the Consistent Terms proof and the relationship between cross entropy and KL divergence, an interesting conclusion can be drawn:
             <span id="en_fit_1">
-                \mathop{\min}{underline}{\textcolor{blue}{p}} \int q(z_t) KL(q(z_{t-1}|z_t)\|\textcolor{blue}{p(z_{t-1}|z_t)})dz_t  \iff  \mathop{\min}{underline}{\textcolor{blue}{p}} \iint \ q(x)q(z_t|x) KL[q(z_{t-1}|z_t,x)\|\textcolor{blue}{p(z_{t-1}|z_t)}]dxdz_t       \tag{6.19}
+                \mathop{\min}{underline}{\textcolor{blue}{p}} \int q(z_t) KL(q(z_{t-1}|z_t) \Vert \textcolor{blue}{p(z_{t-1}|z_t)})dz_t  \iff  \mathop{\min}{underline}{\textcolor{blue}{p}} \iint \ q(x)q(z_t|x) KL(q(z_{t-1}|z_t,x) \Vert \textcolor{blue}{p(z_{t-1}|z_t)})dxdz_t       \tag{6.19}
             </span>
             By comparing the expressions on the left and right, it can be observed that the objective function on the right side includes an additional variable $X$ compared to the left side. At the same time, there is an additional integral with respect to $X$, with the occurrence probability of $X$, denoted as $q(x)$, serving as the weighting coefficient for the integral.
             
             Following a similar proof method, a more general relationship can be derived:
             <span id="en_fit_2">
-                \mathop{\min}{underline}{\textcolor{blue}{p}}  KL(q(z)\|\textcolor{blue}{p(z)})  \iff  \mathop{\min}_{\textcolor{blue}{p}} \int \ q(x) KL(q(z|x)\|\textcolor{blue}{p(z)})dx         \tag{6.20}
+                \mathop{\min}{underline}{\textcolor{blue}{p}}  KL(q(z) \Vert \textcolor{blue}{p(z)})  \iff  \mathop{\min}_{\textcolor{blue}{p}} \int \ q(x) KL(q(z|x) \Vert \textcolor{blue}{p(z)})dx         \tag{6.20}
             </span>
-            
+            A detailed derivation of this conclusion can be found in <a href="#cond_kl">Appendix A</a>.
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_fit_posterior_en")
     return
 
@@ -325,10 +325,145 @@ def md_posterior_transform_en():
             \end{align}
             In order to better understand the property of the transform, the matrix $(Q_{x|z})^n$ is also plotted in <a href="#demo_4_2">Demo 4.2</a>. From the demo we can see that, as the iterations converge, the row vectors of the matrix $(Q_{x|z})^n$ will become a constant vector, that is, all components of the vector will be the same, which will appear as a horizontal line in the denisty plot.
             
+            In the <a href="#proof_ctr">Appendix B</a>, a proof will be provided that, when $q(x)$ and $\alpha$ satisfy some conditions, the posterior transform is a strict Contraction Mapping.
+            
+            The relationship between the converged distribution and the input distribution q(x) cannot be rigorously proven at present. 
+            
+            <h3 style="font-size:18px"> Anti-noise Capacity In Restoring Data Distribution</h3>
+            From the above analysis, we know that when certain conditions are satisfied, the <em>posterior transform</em> is a contraction mapping. Therefore, the following relationship exists: 
+            \begin{align}
+                dist(q(x),\ q_o(x)) < dist(q(z),\ q_i(z))         \tag{7.12}
+            \end{align}
+            Wherein, $q(z)$ is the ideal input distribution, $q(x)$ is the ideal output distribution, $q_i(x)$ is any arbitrary input distribution, and $q_o(x)$ is the output distribution obtained after transforming $q_i(z)$. 
+            
+            The above equation indicates that the distance between the output distribution $q_o(x)$ and the ideal output distribution q(x) will always be <b>less than</b> the distance between the input distribution $q_i(z)$ and the ideal input distribution q(x). Hence, the <em>posterior transform</em> has certain resistance to noise. This means that during the process of restoring $q(x)$(<a href="#backward_process">Section 5</a>), even if the <em>tail distribution</em> $q(z_T)$ contains some error, the error of the outputed distribution $q(x)$ will be smaller than the error of input after undergoing a series of transform.
+            
+            Refer specifically to <a href="#demo_3_2">Demo 3.2</a>, where by increasing the value of the <b>noise ratio</b>, noise can be added to the <em>tail distribution</em> $q(z_T)$. Clicking the "apply" button will gradually draw out the restoring process, with the restored distribution represented by a $\textcolor{red}{\text{red curve}}$, and the error size will be computed by the JS divergence. You will see that the error of restored $q(x)$ is always less than the error of $q(z_T)$.
+            
+            From the above discussion, we know that the smaller the $\alpha$ (the larger the noise used in the transform process), the greater the contractive ratio of the contraction mapping, and thus, the stronger the ability to resist noise.
+            
+            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_posterior_transform_en")
+    return
+
+
+def md_deconvolution_en():
+    global g_latex_del
+
+    title = "8. Can the data distribution be restored by deconvolution?"
+    with gr.Accordion(label=title, elem_classes="first_md", elem_id="deconvolution"):
+        gr.Markdown(
+            r"""
+            As mentioned in the <a href="#introduction">Section 1</a>, the transform of Equation 2.1 can be divided into two sub-transforms, the first one being a linear transform and the second being adding independent Gaussian noise. The linear transform is equivalent to a scaling transform of the probability distribution, so it has an inverse transformation. Adding independent Gaussian noise is equivalent to the execution of a convolution operation on the probability distribution, which can be restored through <b>deconvolution</b>. Therefore, theoretically, the data distribution $q(x)$ can be recovered from the final probability distribution $q(z_T)$ through <b>inverse linear transform</b> and <b>deconvolution</b>.
+            
+            However, in actuality, some problems do exist. Due to the extreme sensitivity of deconvolution to errors, having high input sensitivity, even a small amount of input noise can lead to significant changes in output[\[11\]](#deconv_1)[\[12\]](#deconv_2). Meanwhile, in the diffusion model, the standard normal distribution is used as an approximation to replace $q(z_T)$, thus, noise is introduced at the initial stage of recovery. Although the noise is relatively small, because of the sensitivity of deconvolution, the noise will gradually amplify, affecting the recovery.
+            
+            In addition, the infeasibility of <b>deconvolution restoring</b> can be understood from another perspective. Since the process of forward transform (equations 4.1 to 4.4) is fixed, the convolution kernel is fixed. Therefore, the corresponding deconvolution transform is also fixed. Since the initial data distribution $q(x)$ is arbitrary, any probability distribution can be transformed into an approximation of $\mathcal{N}(0,I)$ through a series of fixed linear transforms and convolutions. If <b>deconvolution restoring</b> is feasible, it means that a fixed deconvolution can be used to restore any data distribution $q(x)$ from the $\mathcal{N}(0,I)$ , this is clearly <b>paradoxical</b>. The same input, the same transform, cannot have multiple different outputs.
+            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_deconvolution_en")
+    return
+
+
+def md_cond_kl_en():
+    global g_latex_del
+
+    title = "Appendix A Conditional KL Divergence"
+    with gr.Accordion(label=title, elem_classes="first_md", elem_id="cond_kl"):
+        gr.Markdown(
+            r"""
+            This section mainly introduces the relationship between <b>KL divergence</b> and <b>conditional KL divergence</b>. Before the formal introduction, we will briefly introduce the definitions of entropy and conditional entropy, as well as the inequality relationship between them, in preparation for the subsequent proof 
+
+            <h3 style="font-size:20px">Entropy and Conditional Entropy</h3>
+            For any two random variables $Z, X$, the <b>Entropy</b> is defined as follows<a href="#entropy">[16]</a>：
+            \begin{align}
+               \mathbf{H}(Z) = \int -p(z)\log{p(z)}dz    \tag{A.1}
+            \end{align}
+            The <b>Conditional Entropy</b> is defined as followed <a href="#cond_entropy">[17]</a>：
+            \begin{align}
+               \mathbf{H}(Z|X) = \int p(x) \overbrace{\int -p(z|x)\log{p(z|x)}dz}^{\text{Entropy}}\ dx    \tag{A.2}
+            \end{align}
+            The following inequality relationship exists between the two：
+            \begin{align}
+               \mathbf{H}(Z|X) \le \mathbf{H}(Z)         \tag{A.3}
+            \end{align}
+            It is to say that the Conditional Entropy is always less than or equal to the Entropy, and they are equal only when X and Z are independent. The proof of this relationship can be found in the literature <a href="#cond_entropy">[17]</a>.
+
+            <h3 style="font-size:20px">KL Divergence and Conditional KL Divergence</h3>
+            In the same manner as the definition of Conditional Entropy, we introduce a new definition, <b>Conditional KL Divergence</b>, denoted as $KL_{\\mathcal{C}}$. Since KL Divergence is non-symmetric, there exist two forms as follows. 
+            \begin{align}
+               KL_{\mathcal{C}}(q(z|x) \Vert \textcolor{blue}{p(z)}) = \int \ q(x) KL(q(z|x) \Vert \textcolor{blue}{p(z)})dx                        \tag{A.4}     \newline
+               KL_{\mathcal{C}}(q(z) \Vert \textcolor{blue}{p(z|x)}) = \int \ \textcolor{blue}{p(x)} KL(q(z) \Vert \textcolor{blue}{p(z|x)})dx      \tag{A.5}
+            \end{align}
+
+            Similar to Conditional Entropy, there also exists a similar inequality relationship for Conditional KL Divergence:
+            \begin{align}
+               KL_{\mathcal{C}}(q(z|x) \Vert \textcolor{blue}{p(z)}) \ge KL(q(z) \Vert \textcolor{blue}{p(z)})        \tag{A.6}   \newline
+               KL_{\mathcal{C}}(q(z) \Vert \textcolor{blue}{p(z|x)}) \ge KL(q(z) \Vert \textcolor{blue}{p(z)})        \tag{A.7}
+            \end{align}
+            It is to say that the Conditional KL Divergence is always less than or equal to the KL Divergence, and they are equal only when X and Z are independent.
+
+            The following provides proofs for the conclusions on Equation A.5 and Equation A.6 respectively.
+
+            For equation A.6, the proof is as follows:
+            \begin{align}
+                KL_{\mathcal{C}}(q(z|x) \Vert \textcolor{blue}{p(z)}) &= \int \ q(x) KL(q(z|x) \Vert \textcolor{blue}{p(z)})dx      \tag{A.8}    \newline
+                    &= \iint q(x) q(z|x) \log \frac{q(z|x)}{\textcolor{blue}{p(z)}}dzdx                                             \tag{A.9}    \newline
+                    &= -\overbrace{\iint - q(x)q(z|x) \log q(z|x) dzdx}^{\text{Condtional Entropy }\mathbf{H}_q(Z|X)} - \iint q(x) q(z|x) \log \textcolor{blue}{p(z)} dzdx          \tag{A.10}   \newline
+                    &= -\mathbf{H}_q(Z|X) - \int \left\lbrace \int q(x) q(z|x)dx \right\rbrace \log \textcolor{blue}{p(z)}dz                                                        \tag{A.11}   \newline
+                    &= -\mathbf{H}_q(Z|X) + \overbrace{\int - q(z) \log p(z)dz}^{\text{Cross Entropy}}                                                                              \tag{A.12}   \newline
+                    &= -\mathbf{H}_q(Z|X) + \int q(z)\left\lbrace \log\frac{q(z)}{\textcolor{blue}{p(z)}} -\log q(z)\right\rbrace dz                                                \tag{A.13}   \newline
+                    &= -\mathbf{H}_q(Z|X) + \int q(z)\log\frac{q(z)}{\textcolor{blue}{p(z)}}dz + \overbrace{\int - q(z)\log q(z)dz}^{\text{Entropy } \mathbf{H}_q(Z)}               \tag{A.14}   \newline
+                    &= KL(q(z) \Vert \textcolor{blue}{p(z)}) + \overbrace{\mathbf{H}_q(Z) - \mathbf{H}_q(Z|X)}^{\ge 0}              \tag{A.15}  \newline
+                    &\le KL(q(z) \Vert \textcolor{blue}{p(z)})      \tag{A.16}
+            \end{align}
+            In this context, equation A.15 applies the conclusion that <b>Conditional Entropy is always less than or equal to Entropy</b>. Thus, the relationship in equation A.6 is derived. 
+
+            For equation A.6, the proof is as follows:
+            \begin{align}
+                KL(\textcolor{blue}{q(z)} \Vert p(z)) &= \int \textcolor{blue}{q(z)}\log\frac{\textcolor{blue}{q(z)}}{p(z)}dx    \tag{A.15}          \newline
+                        &= \int q(z)\log\frac{q(z)}{\int p(z|x)p(z)dz}dz 						 	\tag{A.16}          \newline
+                        &= \textcolor{orange}{\int p(x)dx}\int q(z)\log q(z)dz - \int q(z)\textcolor{red}{\log\int p(z|x)p(x)dx}dz	\qquad \ \textcolor{orange}{\int p(x)dx=1}			    \tag{A.17}      \newline
+                        &\le \iint p(x) q(z)\log q(z)dzdx - \int q(z)\textcolor{red}{\int p(x)\log p(z|x)dx}dz \ \qquad 	 \textcolor{red}{\text{jensen\ inequality}}                     \tag{A.18}      \newline
+                        &= \iint p(x)q(z)\log q(z)dzdx - \iint p(z)q(z)\log p(z|x)dzdx			 	    \tag{A.19}          \newline
+                        &= \iint p(x)q(z)(\log q(z) - \log p(z|x))dzdx								    \tag{A.20}          \newline
+                        &= \iint p(x)q(z)\log \frac{q(z)}{p(z|x)}dzdx								    \tag{A.21}          \newline
+                        &= \int p(x)\left\lbrace \int q(z)\log \frac{q(z)}{p(z|x)}dz\right\rbrace dx    \tag{A.22}          \newline
+                        &= \int p(x)KL(\textcolor{blue}{q(z)} \Vert p(z|x))dx                           \tag{A.23}          \newline
+                        &= KL_{\mathcal{C}}(q(z) \Vert \textcolor{blue}{p(z|x)})                        \tag{A.24}
+            \end{align}
+            Thus, the relationship in equation A.7 is obtained.
+
+            Another <b>important conclusion</b> can be drawn from equation A.15.
+
+            The KL Divergence is often used to fit the distribution of data. In this scenario, the distribution of the data is denoted by $q(z)$ and the parameterized model distribution is denoted by $\textcolor{blue}{p_\theta(z)}$. During the optimization process, since both $q(z|x)$ and $q(x)$ remain constant, the term $\mathbf{H}(Z) - \mathbf{H}(Z|X)$ in Equation A.15 is a constant. Thus, the following relationship is obtained:
+            <span id="zh_cond_kl_2">
+                \mathop{\min}{underline}{\textcolor{blue}{p_\theta}}  KL(q(z) \Vert \textcolor{blue}{p_\theta(z)})  \iff  \mathop{\min}{underline}{\textcolor{blue}{p_\theta}} \int \ q(x) KL(q(z|x) \Vert \textcolor{blue}{p_\theta(z)})dx   \tag{A.25}
+            </span>
+
+            Comparing the above relationship with <b>Denoised Score Matching</b> <a href="#dsm">[18]</a>(equation A.26), some similarities can be observed. Both introduce a new variable $X$, and substitute the targeted fitting distribution q(z) with q(z|x). After the substitution, since q(z|x) is a conditional probability distribution, both consider all conditions and perform a weighted sum using the probability of the conditions occurring, $q(x)$, as the weight coefficient.
+            <span id="zh_cond_kl_3">
+                \mathop{\min}{underline}{\textcolor{blue}{\psi_\theta}} \frac{1}{2} \int q(z) \left\lVert \textcolor{blue}{\psi_\theta(z)} - \frac{\partial q(z)}{\partial z} \right\rVert^2 dz \iff  \mathop{\min}{underline}{\textcolor{blue}{\psi_\theta}} \int q(x)\ \overbrace{\frac{1}{2} \int q(z|x) \left\lVert \textcolor{blue}{\psi_\theta(z)} - \frac{\partial q(z|x)}{\partial z} \right\rVert^2 dz}^{\text{Score Matching of }q(z|x)}\ dx      \tag{A.26}
+            </span>
+
+            The operation of the above weighted sum is somewhat similar to <em> Elimination by Total Probability Formula </b>.
+            \begin{align}
+                q(z) = \int q(z,x) dx = \int q(x) q(z|x) dx     \tag{A.27}
+            \end{align}
+            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_cond_kl_en")
+    return
+
+
+def md_proof_ctr_en():
+    global g_latex_del
+
+    title = "Appendix B Proof of Contraction"
+    with gr.Accordion(label=title, elem_classes="first_md", elem_id="proof_ctr"):
+        gr.Markdown(
+            r"""
             <center> <img id="en_fig2" src="file/fig2.png" width="960" style="margin-top:12px"/> </center>
             <center> Figure 2: Only one component in support </center>
             
-            The following will prove that with some conditions, the posterior transform is a contraction mapping, and there exists a unique point, which is also the converged point. The proof assumes that the random variable is discrete, so the posterior transform can be regarded as a single step transition of a <b>discrete Markov Chain</b>. The posterior $q(x|z)$ corresponds to the <b>transfer matrix</b>. Continuous variables can be considered as discrete variables with infinite states.
+            The following will prove that with some conditions, the posterior transform is a contraction mapping, and there exists a unique point, which is also the converged point.
+             
+            The proof will be divided into several cases, and assumes that the random variable is discrete, so the posterior transform can be regarded as a single step transition of a <b>discrete Markov Chain</b>. The posterior $q(x|z)$ corresponds to the <b>transfer matrix</b>. Continuous variables can be considered as discrete variables with infinite states.
             <ol style="list-style-type:decimal">
             <li> When $q(x)$ is greater than 0, the posterior transform matrix $q(x|z)$ will be greater than 0 too. Therefore, this matrix is the transition matrix of an $\textcolor{red}{\text{irreducible}}\ \textcolor{green}{\text{aperiodic}}$ Markov Chain. According to the conclusion of the literature <a href="#mc_basic_p6">[13]</a>, this transformation is a contraction mapping with respect to Total Variance metric. Therefore, according to the Banach fixed-point theorem, this transformation has a unique fixed point(converged point). </li>
              
@@ -368,51 +503,20 @@ def md_posterior_transform_en():
             
             Additionally, there exists a more generalized relation about the posterior transform that is independent of $q(x|z)$: the Total Variance distance between two output distributions will always be <b>less than or equal to</b> the Total Variance distance between their corresponding input distributions, that is
             \begin{align}
-                dist(q_{o1}(x),\ q_{o2}(x)) <= dist(q_{i1}(z),\ q_{i2}(z))    \notag
+                dist(q_{o1}(x),\ q_{o2}(x)) <= dist(q_{i1}(z),\ q_{i2}(z))    \tag{B.1}
             \end{align}
             The proof is given below in discrete form:
             \begin{align}
-                      \lVert q_{o1}-q_{o2}\rVert_{TV} &= \lVert Q_{x|z}q_{i1} - Q_{x|z}q_{i2}\rVert_{TV}                                                                                                                    \tag{7.6}         \newline
-                                                      &=   \sum_{m}\textcolor{red}{|}\sum_{n}Q_{x|z}(m,n)q_{i1}(n) - \sum_{n}Q_{x|z}(m,n)q_{i2}(n)\textcolor{red}{|}                                                        \tag{7.7}         \newline
-                                                      &=   \sum_{m}\textcolor{red}{|}\sum_{n}Q_{x|z}(m,n)(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}                                                                          \tag{7.8}         \newline
-                                                      &\leq \sum_{m}\sum_{n}Q_{x|z}(m,n)\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}             \qquad \qquad \qquad \text{Absolute value inequality}       \tag{7.9}         \newline
-                                                      &=   \sum_{n}\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|} \sum_{m} Q_{x|z}(m,n)            \qquad \qquad \qquad \sum_{m} Q_{x|z}(m,n) = 1              \tag{7.10}        \newline
-                                                      &=   \sum_{n}\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}                                                                                              \tag{7.11}
+                      \lVert q_{o1}-q_{o2}\rVert_{TV} &= \lVert Q_{x|z}q_{i1} - Q_{x|z}q_{i2}\rVert_{TV}                                                                                                                    \tag{B.2}         \newline
+                                                      &=   \sum_{m}\textcolor{red}{|}\sum_{n}Q_{x|z}(m,n)q_{i1}(n) - \sum_{n}Q_{x|z}(m,n)q_{i2}(n)\textcolor{red}{|}                                                        \tag{B.3}         \newline
+                                                      &=   \sum_{m}\textcolor{red}{|}\sum_{n}Q_{x|z}(m,n)(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}                                                                          \tag{B.4}         \newline
+                                                      &\leq \sum_{m}\sum_{n}Q_{x|z}(m,n)\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}             \qquad \qquad \qquad \text{Absolute value inequality}       \tag{B.5}         \newline
+                                                      &=   \sum_{n}\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|} \sum_{m} Q_{x|z}(m,n)            \qquad \qquad \qquad \sum_{m} Q_{x|z}(m,n) = 1              \tag{B.6}         \newline
+                                                      &=   \sum_{n}\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}                                                                                              \tag{B.7}
             \end{align}
-            In this context, $Q_{x|z}(m,n)$ represents the element at the m-th row and n-th column of the matrix $Q_{x|z}$, and $q_{i1}(n)$ represents the n-th element of the vector $q_{i1}$. 
-            
-            The relationship between the converged distribution and the input distribution q(x) cannot be rigorously proven at present. 
-            
-            <h3 style="font-size:18px"> Anti-noise Capacity In Restoring Data Distribution</h3>
-            From the above analysis, we know that when certain conditions are satisfied, the <em>posterior transform</em> is a contraction mapping. Therefore, the following relationship exists: 
-            \begin{align}
-                dist(q(x),\ q_o(x)) < dist(q(z),\ q_i(z))         \tag{7.12}
-            \end{align}
-            Wherein, $q(z)$ is the ideal input distribution, $q(x)$ is the ideal output distribution, $q_i(x)$ is any arbitrary input distribution, and $q_o(x)$ is the output distribution obtained after transforming $q_i(z)$. 
-            
-            The above equation indicates that the distance between the output distribution $q_o(x)$ and the ideal output distribution q(x) will always be <b>less than</b> the distance between the input distribution $q_i(z)$ and the ideal input distribution q(x). Hence, the <em>posterior transform</em> has certain resistance to noise. This means that during the process of restoring $q(x)$(<a href="#backward_process">Section 5</a>), even if the <em>tail distribution</em> $q(z_T)$ contains some error, the error of the outputed distribution $q(x)$ will be smaller than the error of input after undergoing a series of transform.
-            
-            Refer specifically to <a href="#demo_3_2">Demo 3.2</a>, where by increasing the value of the <b>noise ratio</b>, noise can be added to the <em>tail distribution</em> $q(z_T)$. Clicking the "apply" button will gradually draw out the restoring process, with the restored distribution represented by a $\textcolor{red}{\text{red curve}}$, and the error size will be computed by the JS divergence. You will see that the error of restored $q(x)$ is always less than the error of $q(z_T)$.
-            
-            From the above discussion, we know that the smaller the $\alpha$ (the larger the noise used in the transform process), the greater the contractive ratio of the contraction mapping, and thus, the stronger the ability to resist noise.
-            
-            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_posterior_transform_en")
-    return
-
-
-def md_deconvolution_en():
-    global g_latex_del
-
-    title = "8. Can the data distribution be restored by deconvolution?"
-    with gr.Accordion(label=title, elem_classes="first_md", elem_id="deconvolution"):
-        gr.Markdown(
-            r"""
-            As mentioned in the <a href="#introduction">Section 1</a>, the transform of Equation 2.1 can be divided into two sub-transforms, the first one being a linear transform and the second being adding independent Gaussian noise. The linear transform is equivalent to a scaling transform of the probability distribution, so it has an inverse transformation. Adding independent Gaussian noise is equivalent to the execution of a convolution operation on the probability distribution, which can be restored through <b>deconvolution</b>. Therefore, theoretically, the data distribution $q(x)$ can be recovered from the final probability distribution $q(z_T)$ through <b>inverse linear transform</b> and <b>deconvolution</b>.
-            
-            However, in actuality, some problems do exist. Due to the extreme sensitivity of deconvolution to errors, having high input sensitivity, even a small amount of input noise can lead to significant changes in output[\[11\]](#deconv_1)[\[12\]](#deconv_2). Meanwhile, in the diffusion model, the standard normal distribution is used as an approximation to replace $q(z_T)$, thus, noise is introduced at the initial stage of recovery. Although the noise is relatively small, because of the sensitivity of deconvolution, the noise will gradually amplify, affecting the recovery.
-            
-            In addition, the infeasibility of <b>deconvolution restoring</b> can be understood from another perspective. Since the process of forward transform (equations 4.1 to 4.4) is fixed, the convolution kernel is fixed. Therefore, the corresponding deconvolution transform is also fixed. Since the initial data distribution $q(x)$ is arbitrary, any probability distribution can be transformed into an approximation of $\mathcal{N}(0,I)$ through a series of fixed linear transforms and convolutions. If <b>deconvolution restoring</b> is feasible, it means that a fixed deconvolution can be used to restore any data distribution $q(x)$ from the $\mathcal{N}(0,I)$ , this is clearly <b>paradoxical</b>. The same input, the same transform, cannot have multiple different outputs.
-            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_deconvolution_en")
+            In this context, $Q_{x|z}(m,n)$ represents the element at the m-th row and n-th column of the matrix $Q_{x|z}$, and $q_{i1}(n)$ represents the n-th element of the vector $q_{i1}$.
+                     
+            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_proof_ctr_en")
     return
 
 
@@ -496,6 +600,10 @@ def run_app():
         md_posterior_transform_en()
         
         md_deconvolution_en()
+        
+        md_cond_kl_en()
+        
+        md_proof_ctr_en()
         
         md_reference_en()
         

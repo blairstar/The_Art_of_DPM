@@ -226,7 +226,7 @@ def md_fit_posterior_zh():
             \end{align}
             也可以KL散度作为目标函数进行优化，KL散度与交叉熵是等价的[\[10\]](#ce_kl)。
             <span id="zh_fit_0">
-                loss &= \int q(z_t) KL(q(z_{t-1}|z_t)\|\textcolor{blue}{p(z_{t-1}|z_t)})dz_t                                                             \tag{6.3}      \newline
+                loss &= \int q(z_t) KL(q(z_{t-1}|z_t) \Vert \textcolor{blue}{p(z_{t-1}|z_t)})dz_t                                                             \tag{6.3}      \newline
                      &= \int q(z_t) \int q(z_{t-1}|z_t) \frac{q(z_{t-1}|z_t)}{\textcolor{blue}{p(z_{t-1}|z_t)}} dz_{t-1} dz_t                            \tag{6.4}      \newline 
                      &= -\int q(z_t)\ \underbrace{\int q(z_{t-1}|z_t) \log \textcolor{blue}{p(z_{t-1}|z_t)}dz_{t-1}}{underline}{\text{Cross Entropy}}\ dz_t + \underbrace{\int q(z_t) \int q(z_{t-1}|z_t) \log q(z_{t-1}|z_t)}{underline}{\text{Is Constant}} dz  \tag{6.5}
             </span>
@@ -250,8 +250,8 @@ def md_fit_posterior_zh():
                      &\quad - \iint \int q(x)q(z_{t-1}, z_t|x) \log \textcolor{blue}{p(z_{t-1}|z_t)}dxdz_{t-1}dz_t - \textcolor{orange}{C_1}                                                \tag{6.11}          \newline
                      &= \iint \int q(x)q(z_{t-1},z_t|x) \log \frac{q(z_{t-1}|z_t,x)}{\textcolor{blue}{p(z_{t-1}|z_t)}}dxdz_{t-1}dz_t - \textcolor{orange}{C_1}                              \tag{6.12}          \newline
                      &= \iint q(x)q(z_t|x)\int q(z_{t-1}|z_t,x) \log \frac{q(z_{t-1}|z_t,x)}{\textcolor{blue}{p(z_{t-1}|z_t)}}dz_{t-1}\ dz_xdz_t - \textcolor{orange}{C_1}                  \tag{6.13}          \newline
-                     &= \iint \ q(x)q(z_t|x) KL[q(z_{t-1}|z_t,x)\|\textcolor{blue}{p(z_{t-1}|z_t)}]dxdz_t - \textcolor{orange}{C_1}                                                         \tag{6.14}          \newline
-                     &\propto \iint \ q(x)q(z_t|x) KL[q(z_{t-1}|z_t,x)\|\textcolor{blue}{p(z_{t-1}|z_t)}]dxdz_t                                                                             \tag{6.15}          \newline
+                     &= \iint \ q(x)q(z_t|x) KL(q(z_{t-1}|z_t,x) \Vert \textcolor{blue}{p(z_{t-1}|z_t)})dxdz_t - \textcolor{orange}{C_1}                                                         \tag{6.14}          \newline
+                     &\propto \iint \ q(x)q(z_t|x) KL(q(z_{t-1}|z_t,x) \Vert \textcolor{blue}{p(z_{t-1}|z_t)})dxdz_t                                                                             \tag{6.15}          \newline
             \end{align}
 
             上式中的$C_1$项是一个固定值，不包含待优化的参数，其中，$q(x)$是固定的概率分布，$q(z_{t-1}|z_t)$也是固定概率分布，具体形式由$q(x)$及系数$\alpha$确定。
@@ -267,14 +267,15 @@ def md_fit_posterior_zh():
              
             根据一致项证明的结论，以及交叉熵与KL散度的关系，可得出一个有趣的结论：
             <span id="zh_fit_1">
-                \mathop{\min}{underline}{\textcolor{blue}{p}} \int q(z_t) KL(q(z_{t-1}|z_t)\|\textcolor{blue}{p(z_{t-1}|z_t)})dz_t  \iff  \mathop{\min}{underline}{\textcolor{blue}{p}} \iint \ q(x)q(z_t|x) KL[q(z_{t-1}|z_t,x)\|\textcolor{blue}{p(z_{t-1}|z_t)}]dxdz_t
+                \mathop{\min}{underline}{\textcolor{blue}{p}} \int q(z_t) KL(q(z_{t-1}|z_t) \Vert \textcolor{blue}{p(z_{t-1}|z_t)})dz_t  \iff  \mathop{\min}{underline}{\textcolor{blue}{p}} \iint \ q(x)q(z_t|x) KL(q(z_{t-1}|z_t,x) \Vert \textcolor{blue}{p(z_{t-1}|z_t)})dxdz_t
             </span>
             比较左右两边的式子，可以看出，右边的目标函数比左边的目标函数多了一个条件变量$X$，同时也多了一个关于$X$积分，并且以$X$的发生的概率$q(x)$作为积分的加权系数。
             
             依照类似的思路，可推导出一个更通用的关系：
             <span id="zh_fit_2">
-                \mathop{\min}{underline}{\textcolor{blue}{p}}  KL(q(z)\|\textcolor{blue}{p(z)})  \iff  \mathop{\min}_{\textcolor{blue}{p}} \int \ q(x) KL(q(z|x)\|\textcolor{blue}{p(z)})dx
+                \mathop{\min}{underline}{\textcolor{blue}{p}}  KL(q(z) \Vert \textcolor{blue}{p(z)})  \iff  \mathop{\min}_{\textcolor{blue}{p}} \int \ q(x) KL(q(z|x) \Vert \textcolor{blue}{p(z)})dx
             </span>
+            关于此结论的详细推导，可见<a href="#cond_kl">Appendix A</a>。
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_fit_posterior_zh")
     return
 
@@ -286,7 +287,7 @@ def md_posterior_transform_zh():
 
         gr.Markdown(
             r"""
-            <h3 style="font-size:18px"> Contraction Mapping and Fixed Point </h3>
+            <h3 style="font-size:18px"> 压缩映射及收敛点 </h3>
             \begin{align}
                 q(x) &= \int q(x,z) dz = \int q(x|z)q(z)dz      \tag{7.1}
             \end{align}
@@ -297,12 +298,12 @@ def md_posterior_transform_zh():
             \end{align}
 
             读者可查看<a href="#demo_4_1">Demo 4.1</a>，左侧三个图呈现一个变换的过程，左1图是任意的数据分布$q(x)$，左3图是变换后的概率分布，左2图是后验概率分布。可更改随机种子生成新的数据分布，调整$\alpha$值引入不同程度的噪声。左侧最后两个图展示变换的“压缩性质”，左4图展示随机生成的两个输入分布，同时给出其距离度量值$div_{in}$；左5图展示经过变换后的两个输出分布，输出分布之间的距离标识为$div_{out}$。读者可改变输入的随机种子，切换不同的输入。可在图中看到，对于任意的输入，$div_{in}$总是小于$div_{out}$。另外，也可改变$\alpha$的值，将会看到，$\alpha$越小(噪声越大)，$\frac{div_{out}}{div_{in}}$的比值也越小，即收缩率越大。
-
+            
             由Banach fixed-point theorem<a href="#fixed_point">[5]</a>可知，压缩映射存在惟一一个定点(收敛点)。也就是说，对于任意的输入分布，可以连续迭代应用“后验概率变换”，只要迭代次数足够多，最终都会输出同一个分布。经过大量一维随机变量实验发现，定点(收敛点)<b>位于$q(x)$附近</b>。并且，与$\alpha$的值有关，$\alpha$越小(噪声越大)，离得越近。
             
             读者可看<a href="#demo_4_2">Demo 4.2</a>，此部分展示迭代收敛的例子。选择合适的迭代次数，点中“apply iteration transform”，将逐步画出迭代的过程，每个子图均会展示各自变换后的输出分布($\textcolor{green}{绿色曲线}$)，收敛的参考点分布$q(x)$以$\textcolor{blue}{蓝色曲线}$画出，同时给出输出分布与$q(x)$之间的距离$dist$。可以看出，随着迭代的次数增加，输出分布与$q(x)$越来越相似，并最终会稳定在$q(x)$附近。对于较复杂的分布，可能需要较多迭代的次数或者较大的噪声。迭代次数可以设置为上万步，但会花费较长时间。
 
-            对于一维离散的情况，$q(x|z)$将离散成一个矩阵(暂记为$Q_{x|z}$)，$q(z)$离散成一个向量(记为$\boldsymbol{q_i}$)，积分操作$\int q(x|z)q(z)dz$将离散成"矩阵-向量"乘法操作，所以后验概率变换可写成
+            对于一维离散的情况，$q(x|z)$将离散成一个矩阵(记为$Q_{x|z}$)，$q(z)$离散成一个向量(记为$\boldsymbol{q_i}$)，积分操作$\int q(x|z)q(z)dz$将离散成"矩阵-向量"乘法操作，所以后验概率变换可写成
             \begin{align}
                 \boldsymbol{q_o} &= Q_{x|z}\ \boldsymbol{q_i} &             \quad\quad        &\text{1 iteration}         \tag{7.3}       \newline
                 \boldsymbol{q_o} &= Q_{x|z}\ Q_{x|z}\ \boldsymbol{q_i} &    \quad\quad        &\text{2 iteration}         \tag{7.4}       \newline
@@ -310,11 +311,147 @@ def md_posterior_transform_zh():
                 \boldsymbol{q_o} &= (Q_{x|z})^n\ \boldsymbol{q_i} &         \quad\quad        &\text{n iteration}         \tag{7.5}       \newline
             \end{align}
             于是，为了更深入地理解变换的特点，<a href="#demo_4_2">Demo 4.2</a>也画出矩阵$(Q_{x|z})^n$的结果。从图里可以看到，当迭代趋向收敛时，矩阵$(Q_{x|z})^n$的行向量将变成一个常数向量，即向量的各分量都相等。在二维密度图里将表现为一条横线。
+
+            在<a href="#proof_ctr">Appendix B</a>中，将会提供一个证明，当$q(x)$和$\alpha$满足一些条件时，后验概率变换是一个严格的压缩映射。
+
+            关于定点分布与输入分布q(x)之间距离的关系，目前尚不能严格证明。
             
+            <h3 style="font-size:18px"> 恢复数据分布过程中的抗噪声能力 </h3>
+            由上面的分析可知，当满足一些条件时，"后验概率变换"是一个压缩映射，所以存在如下的关系：
+            \begin{align}
+                dist(q(x),\ q_o(x)) < dist(q(z),\ q_i(z))         \tag{7.12}
+            \end{align}
+            其中，$q(z)$是理想的输入分布，$q(x)$理想的输出分布，$q_i(x)$是任意的输入分布，$q_o(x)$是$q_i(z)$经过变换后的输出分布。
+            
+            上式表明，输出的分布$q_o(x)$与理想输出分布q(x)之间的距离总会</em>小于</em>输入分布$q_i(z)$与理想输入分布q(x)的距离。于是，"后验概率变换"具备一定的抵抗噪声能力。这意味着，在恢复$q(x)$的过程中(<a href="#backward_process">第5节</a>)，哪怕输入的“末尾分布$q(z_T)”$存在一定的误差，经过一系列变换后，输出的“数据分布$q(x)$“的误差也会比输入的误差更小。
+            
+            具体可看<a href="#demo_3_2">Demo 3.2</a>，通过增加“noise ratio”的值可以向“末尾分布$q(z_T)$”添加噪声，点击“apply”按钮将逐步画出恢复的过程，恢复的分布以$\textcolor{red}{红色曲线}$画出，同时也会通过JS散度标出误差的大小。将会看到，恢复的$q(x)$的误差总是小于$q(z_T)$的误差。
+            
+            由上面的讨论可知，$\alpha$越小(即变换过程中使用的噪声越大)，压缩映射的压缩率越大，于是，抗噪声的能力也越强。
+            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_posterior_transform_zh")
+    return
+
+
+def md_deconvolution_zh():
+    global g_latex_del
+    
+    title = "8. Can the data distribution be restored by deconvolution?"
+    with gr.Accordion(label=title, elem_classes="first_md", elem_id="deconvolution"):
+
+        gr.Markdown(
+            r"""
+            在<a href="#introduction">第1节</a>中提到，式2.1的变换可分为两个子变换，第一个子变换为”线性变换“，第二个为“加上独立高斯噪声”。线性变换相当于对概率分布进行拉伸变换，所以存在逆变换。"加上独立高斯噪声”相当于对概率分布执行卷积操作，卷积操作可通过逆卷积恢复。所以，理论上，可通过“逆线性变换”和“逆卷积”从最终的概率分布$q(z_T)$恢复数据分布$q(x)$。
+            
+            但实际上，会存在一些问题。由于逆卷积对误差极为敏感，具有很高的输入灵敏度，很小的输入噪声就会引起输出极大的变化[\[11\]](#deconv_1)[\[12\]](#deconv_2)。而在扩散模型中，会使用标准正态分布近似代替$q(z_T)$，因此，在恢复的起始阶段就会引入噪声。虽然噪声较小，但由于逆卷积的敏感性，噪声会逐步放大，影响恢复。
+            
+            另外，也可以从另一个角度理解“逆卷积恢复”的不可行性。由于前向变换的过程(式4.1~4.4)是确定的，所以卷积核是固定的，因此，相应的“逆卷积变换“也是固定的。由于起始的数据分布$q(x)$可以是任意的分布，所以，通过一系列固定的“卷积正变换”，可以将任意的概率分布转换成近似$\mathcal{N}(0,I)$的分布。如“逆卷积变换“可行，则意味着，可用一个固定的“逆卷积变换"，将$\mathcal{N}(0,I)$分布恢复成任意的数据分布$q(x)$，这明显是一个悖论。同一个输入，同一个变换，不可能会有多个输出。
+            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_deconvolution_zh")
+    return
+
+
+def md_cond_kl_zh():
+    global g_latex_del
+
+    title = "Appendix A Conditional KL Divergence"
+    with gr.Accordion(label=title, elem_classes="first_md", elem_id="cond_kl"):
+        gr.Markdown(
+            r"""
+            本节主要介绍<b>KL散度</b>与<b>条件KL散度</b>之间的关系。在正式介绍之前，先简单介绍<b>熵</b>和<b>条件熵</b>的定义，以及两者之间存在的不等式关系，为后面的证明作准备。
+
+            <h3 style="font-size:18px">熵及条件熵</h3>
+            对于任意两个随机变量$Z,X$，<b>熵</b>(Entropy)定义如下<a href="#entropy">[16]</a>：
+            \begin{align}
+               \mathbf{H}(Z) = \int -p(z)\log{p(z)}dz    \tag{A.1}
+            \end{align}
+            <b>条件熵</b>(Conditional Entropy)的定义如下<a href="#cond_entropy">[17]</a>：
+            \begin{align}
+               \mathbf{H}(Z|X) = \int p(x) \overbrace{\int -p(z|x)\log{p(z|x)}dz}^{\text{Entropy}}\ dx    \tag{A.2}
+            \end{align}
+            两者存在如下的不等式关系：
+            \begin{align}
+               \mathbf{H}(Z|X) \le \mathbf{H}(Z)         \tag{A.3}
+            \end{align}
+            也就是说，条件熵总是小于或者等于熵，当且仅当X与Z相互独立时，两者相等。此关系的证明可看文献<a href="#cond_entropy">[17]</a>。
+            
+            <h3 style="font-size:18px"> KL散度及条件KL散度 </h3>
+            仿照条件熵定义的方式，引入一个新定义，<b>条件KL散度</b>，记为$KL_{\mathcal{C}}$。由于KL散度的定义是非对称的，所以存在两种形式，如下：
+            \begin{align}
+               KL_{\mathcal{C}}(q(z|x) \Vert \textcolor{blue}{p(z)}) = \int \ q(x) KL(q(z|x) \Vert \textcolor{blue}{p(z)})dx                        \tag{A.4}     \newline
+               KL_{\mathcal{C}}(q(z) \Vert \textcolor{blue}{p(z|x)}) = \int \ \textcolor{blue}{p(x)} KL(q(z) \Vert \textcolor{blue}{p(z|x)})dx      \tag{A.5}
+            \end{align}
+            
+            与条件熵类似，条件KL散度也存在类似的不等式关系：
+            \begin{align}
+               KL_{\mathcal{C}}(q(z|x) \Vert \textcolor{blue}{p(z)}) \ge KL(q(z) \Vert \textcolor{blue}{p(z)})        \tag{A.6}   \newline
+               KL_{\mathcal{C}}(q(z) \Vert \textcolor{blue}{p(z|x)}) \ge KL(q(z) \Vert \textcolor{blue}{p(z)})        \tag{A.7}
+            \end{align}
+            也就是说，条件KL散度总是大于或者等于KL散度，当且仅当X与Z相互独立时，两者相等。
+             
+            下面对式A.5和式A.6的结论分别证明。
+            
+            对于式A.6，证明如下：
+            \begin{align}
+                KL_{\mathcal{C}}(q(z|x) \Vert \textcolor{blue}{p(z)}) &= \int \ q(x) KL(q(z|x) \Vert \textcolor{blue}{p(z)})dx      \tag{A.8}    \newline
+                    &= \iint q(x) q(z|x) \log \frac{q(z|x)}{\textcolor{blue}{p(z)}}dzdx                                             \tag{A.9}    \newline
+                    &= -\overbrace{\iint - q(x)q(z|x) \log q(z|x) dzdx}^{\text{Condtional Entropy }\mathbf{H}_q(Z|X)} - \iint q(x) q(z|x) \log \textcolor{blue}{p(z)} dzdx          \tag{A.10}   \newline
+                    &= -\mathbf{H}_q(Z|X) - \int \left\lbrace \int q(x) q(z|x)dx \right\rbrace \log \textcolor{blue}{p(z)}dz                                                        \tag{A.11}   \newline
+                    &= -\mathbf{H}_q(Z|X) + \overbrace{\int - q(z) \log p(z)dz}^{\text{Cross Entropy}}                                                                              \tag{A.12}   \newline
+                    &= -\mathbf{H}_q(Z|X) + \int q(z)\left\lbrace \log\frac{q(z)}{\textcolor{blue}{p(z)}} -\log q(z)\right\rbrace dz                                                \tag{A.13}   \newline
+                    &= -\mathbf{H}_q(Z|X) + \int q(z)\log\frac{q(z)}{\textcolor{blue}{p(z)}}dz + \overbrace{\int - q(z)\log q(z)dz}^{\text{Entropy } \mathbf{H}_q(Z)}               \tag{A.14}   \newline
+                    &= KL(q(z) \Vert \textcolor{blue}{p(z)}) + \overbrace{\mathbf{H}_q(Z) - \mathbf{H}_q(Z|X)}^{\ge 0}              \tag{A.15}  \newline
+                    &\le KL(q(z) \Vert \textcolor{blue}{p(z)})      \tag{A.16}
+            \end{align}
+            其中式A.15应用了"条件熵总是小于或者等于熵"的结论。于是，得到式A.6的关系。
+            
+            对于式A.7，证明如下：
+            \begin{align}
+                KL(\textcolor{blue}{q(z)} \Vert p(z)) &= \int \textcolor{blue}{q(z)}\log\frac{\textcolor{blue}{q(z)}}{p(z)}dx    \tag{A.15}          \newline
+                        &= \int q(z)\log\frac{q(z)}{\int p(z|x)p(z)dz}dz 						 	\tag{A.16}          \newline
+                        &= \textcolor{orange}{\int p(x)dx}\int q(z)\log q(z)dz - \int q(z)\textcolor{red}{\log\int p(z|x)p(x)dx}dz	\qquad \ \textcolor{orange}{\int p(x)dx=1}			    \tag{A.17}      \newline
+                        &\le \iint p(x) q(z)\log q(z)dzdx - \int q(z)\textcolor{red}{\int p(x)\log p(z|x)dx}dz \ \qquad 	 \textcolor{red}{\text{jensen\ inequality}}                     \tag{A.18}      \newline
+                        &= \iint p(x)q(z)\log q(z)dzdx - \iint p(z)q(z)\log p(z|x)dzdx			 	    \tag{A.19}          \newline
+                        &= \iint p(x)q(z)(\log q(z) - \log p(z|x))dzdx								    \tag{A.20}          \newline
+                        &= \iint p(x)q(z)\log \frac{q(z)}{p(z|x)}dzdx								    \tag{A.21}          \newline
+                        &= \int p(x)\left\lbrace \int q(z)\log \frac{q(z)}{p(z|x)}dz\right\rbrace dx    \tag{A.22}          \newline
+                        &= \int p(x)KL(\textcolor{blue}{q(z)} \Vert p(z|x))dx                           \tag{A.23}          \newline
+                        &= KL_{\mathcal{C}}(q(z) \Vert \textcolor{blue}{p(z|x)})                        \tag{A.24}
+            \end{align}
+            于是，得到式A.7的关系。
+           
+            从式A.15可得出另外一个<b>重要的结论</b>。
+            
+            KL散度常用于拟合数据的分布。在此场景中，数据潜在的分布用$q(z)$表示，参数化的模型分布用$\textcolor{blue}{p_\theta(z)}$表示。在优化的过程中，由于$q(z|x)$和$q(x)$均保持不变，所以式A.15中的$\mathbf{H}(Z) - \mathbf{H}(Z|X)$为一个常数项。于是，可得到如下的关系
+            <span id="zh_cond_kl_2">
+                \mathop{\min}{underline}{\textcolor{blue}{p_\theta}}  KL(q(z) \Vert \textcolor{blue}{p_\theta(z)})  \iff  \mathop{\min}{underline}{\textcolor{blue}{p_\theta}} \int \ q(x) KL(q(z|x) \Vert \textcolor{blue}{p_\theta(z)})dx   \tag{A.25}
+            </span>
+            
+            把上述的关系与Denoised Score Matching<a href="#dsm">[18]</a>作比较，可发现一些相似的地方。两者均引入一个新变量$X$，并且将拟合的目标分布q(z)代替为q(z|x)。代替后，由于q(z|x)是条件概率分布，所以，两者均考虑了所有的条件，并以条件发生的概率$q(x)$作为权重系数执行加权和。
+            <span id="zh_cond_kl_3">
+                \mathop{\min}{underline}{\textcolor{blue}{\psi_\theta}} \frac{1}{2} \int q(z) \left\lVert \textcolor{blue}{\psi_\theta(z)} - \frac{\partial q(z)}{\partial z} \right\rVert^2 dz \iff  \mathop{\min}{underline}{\textcolor{blue}{\psi_\theta}} \int q(x)\ \overbrace{\frac{1}{2} \int q(z|x) \left\lVert \textcolor{blue}{\psi_\theta(z)} - \frac{\partial q(z|x)}{\partial z} \right\rVert^2 dz}^{\text{Score Matching of }q(z|x)}\ dx      \tag{A.26}
+            </span>
+            
+            上述加权和的操作有点类似于"全概率公式消元"。
+            \begin{align}
+                q(z) = \int q(z,x) dx = \int q(x) q(z|x) dx     \tag{A.27}
+            \end{align}
+            
+            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_cond_kl_zh")
+    return
+
+
+def md_proof_ctr_zh():
+    global g_latex_del
+
+    title = "Appendix B Proof of Contraction"
+    with gr.Accordion(label=title, elem_classes="first_md", elem_id="proof_ctr"):
+        gr.Markdown(
+            r"""
             <center> <img src="file/fig2.png" width="960" style="margin-top:12px"/> </center>
             <center> Figure 2: Only one component in support </center>
-             
-            下面分几种情况证明，后验概率变换是一个压缩映射，并存在惟一收敛点。证明的过程假设随机变量是离散型的，因此，后验概率变换可看作是一个<b>离散Markov Chain</b>的一步转移，后验概率$q(x|z)$对应于<b>转移矩阵</b>(Transfer Matrix)。连续型的变量可认为是无限多状态的离散型变量。
+            
+            本节将证明，当$q(x)$及$\alpha$满足一些条件时，后验概率变换是一个压缩映射，并存在惟一收敛点。
+            
+            下面分四种情况进行证明。证明的过程假设随机变量是离散型的，因此，后验概率变换可看作是一个<b>离散Markov Chain</b>的一步转移，后验概率$q(x|z)$对应于<b>转移矩阵</b>(Transfer Matrix)。连续型的变量可认为是无限多状态的离散型变量。
             
             <ol style="list-style-type:decimal">
             <li> 当$q(x)$均大于0时，后验概率变换矩阵$q(x|z)$将大于0，于是此矩阵是一个$\textcolor{red}{不可约}\textcolor{green}{非周期}$的Markov Chain的转移矩阵，根据文献<a href="#mc_basic_p6">[13]</a>的结论，此变换是一个关于Total Variance度量的压缩映射，于是，根据Banach fixed-point theorem，此变换存在惟一定点(收敛点)。</li>
@@ -356,53 +493,21 @@ def md_posterior_transform_zh():
             
             另外，后验概率变换存在一个更通用的关系，与$q(x|z)$的具体值无关: 两个输出分布的之间的Total Variance距离总是会<b>小于等于</b>对应输入分布之间的Total Variance距离，即
             \begin{align}
-                dist(q_{o1}(x),\ q_{o2}(x)) <= dist(q_{i1}(z),\ q_{i2}(z))    \notag
+                dist(q_{o1}(x),\ q_{o2}(x)) \le dist(q_{i1}(z),\ q_{i2}(z))    \tag{B.1}
             \end{align}
             下面通过离散的形式给出证明：
             \begin{align}
-                      \lVert q_{o1}-q_{o2}\rVert_{TV} &= \lVert Q_{x|z}q_{i1} - Q_{x|z}q_{i2}\rVert_{TV}                                                                                                                    \tag{7.6}         \newline
-                                                      &=   \sum_{m}\textcolor{red}{|}\sum_{n}Q_{x|z}(m,n)q_{i1}(n) - \sum_{n}Q_{x|z}(m,n)q_{i2}(n)\textcolor{red}{|}                                                        \tag{7.7}         \newline
-                                                      &=   \sum_{m}\textcolor{red}{|}\sum_{n}Q_{x|z}(m,n)(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}                                                                          \tag{7.8}         \newline
-                                                      &\leq \sum_{m}\sum_{n}Q_{x|z}(m,n)\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}             \qquad \qquad \qquad \text{Absolute value inequality}       \tag{7.9}         \newline
-                                                      &=   \sum_{n}\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|} \sum_{m} Q_{x|z}(m,n)            \qquad \qquad \qquad \sum_{m} Q_{x|z}(m,n) = 1              \tag{7.10}        \newline
-                                                      &=   \sum_{n}\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}                                                                                              \tag{7.11}
+                      \lVert q_{o1}-q_{o2}\rVert_{TV} &= \lVert Q_{x|z}q_{i1} - Q_{x|z}q_{i2}\rVert_{TV}                                                                                                                    \tag{B.2}         \newline
+                                                      &=   \sum_{m}\textcolor{red}{|}\sum_{n}Q_{x|z}(m,n)q_{i1}(n) - \sum_{n}Q_{x|z}(m,n)q_{i2}(n)\textcolor{red}{|}                                                        \tag{B.3}         \newline
+                                                      &=   \sum_{m}\textcolor{red}{|}\sum_{n}Q_{x|z}(m,n)(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}                                                                          \tag{B.4}         \newline
+                                                      &\leq \sum_{m}\sum_{n}Q_{x|z}(m,n)\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}             \qquad \qquad \qquad \text{Absolute value inequality}       \tag{B.5}         \newline
+                                                      &=   \sum_{n}\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|} \sum_{m} Q_{x|z}(m,n)            \qquad \qquad \qquad \sum_{m} Q_{x|z}(m,n) = 1              \tag{B.6}         \newline
+                                                      &=   \sum_{n}\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}                                                                                              \tag{B.7}
             \end{align}
             其中，$Q_{x|z}(m,n)$表示矩阵$Q_{x|z}$的第m行第n列的元素，$q_{i1}(n)$表示向量$q_{i1}$的第n个元素。
             
-            关于定点分布与输入分布q(x)之间距离的关系，目前尚不能严格证明。
-            
-            <h3 style="font-size:18px"> 恢复数据分布过程中的抗噪声能力 </h3>
-            由上面的分析可知，当满足一些条件时，"后验概率变换"是一个压缩映射，所以存在如下的关系：
-            \begin{align}
-                dist(q(x),\ q_o(x)) < dist(q(z),\ q_i(z))         \tag{7.12}
-            \end{align}
-            其中，$q(z)$是理想的输入分布，$q(x)$理想的输出分布，$q_i(x)$是任意的输入分布，$q_o(x)$是$q_i(z)$经过变换后的输出分布。
-            
-            上式表明，输出的分布$q_o(x)$与理想输出分布q(x)之间的距离总会</em>小于</em>输入分布$q_i(z)$与理想输入分布q(x)的距离。于是，"后验概率变换"具备一定的抵抗噪声能力。这意味着，在恢复$q(x)$的过程中(<a href="#backward_process">第5节</a>)，哪怕输入的“末尾分布$q(z_T)”$存在一定的误差，经过一系列变换后，输出的“数据分布$q(x)$“的误差也会比输入的误差更小。
-            
-            具体可看<a href="#demo_3_2">Demo 3.2</a>，通过增加“noise ratio”的值可以向“末尾分布$q(z_T)$”添加噪声，点击“apply”按钮将逐步画出恢复的过程，恢复的分布以$\textcolor{red}{红色曲线}$画出，同时也会通过JS散度标出误差的大小。将会看到，恢复的$q(x)$的误差总是小于$q(z_T)$的误差。
-            
-            由上面的讨论可知，$\alpha$越小(即变换过程中使用的噪声越大)，压缩映射的压缩率越大，于是，抗噪声的能力也越强。
-            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_posterior_transform_zh")
+            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_proof_ctr_zh")
     return
-
-
-def md_deconvolution_zh():
-    global g_latex_del
-    
-    title = "8. Can the data distribution be restored by deconvolution?"
-    with gr.Accordion(label=title, elem_classes="first_md", elem_id="deconvolution"):
-
-        gr.Markdown(
-            r"""
-            在<a href="#introduction">第1节</a>中提到，式2.1的变换可分为两个子变换，第一个子变换为”线性变换“，第二个为“加上独立高斯噪声”。线性变换相当于对概率分布进行拉伸变换，所以存在逆变换。"加上独立高斯噪声”相当于对概率分布执行卷积操作，卷积操作可通过逆卷积恢复。所以，理论上，可通过“逆线性变换”和“逆卷积”从最终的概率分布$q(z_T)$恢复数据分布$q(x)$。
-            
-            但实际上，会存在一些问题。由于逆卷积对误差极为敏感，具有很高的输入灵敏度，很小的输入噪声就会引起输出极大的变化[\[11\]](#deconv_1)[\[12\]](#deconv_2)。而在扩散模型中，会使用标准正态分布近似代替$q(z_T)$，因此，在恢复的起始阶段就会引入噪声。虽然噪声较小，但由于逆卷积的敏感性，噪声会逐步放大，影响恢复。
-            
-            另外，也可以从另一个角度理解“逆卷积恢复”的不可行性。由于前向变换的过程(式4.1~4.4)是确定的，所以卷积核是固定的，因此，相应的“逆卷积变换“也是固定的。由于起始的数据分布$q(x)$可以是任意的分布，所以，通过一系列固定的“卷积正变换”，可以将任意的概率分布转换成近似$\mathcal{N}(0,I)$的分布。如“逆卷积变换“可行，则意味着，可用一个固定的“逆卷积变换"，将$\mathcal{N}(0,I)$分布恢复成任意的数据分布$q(x)$，这明显是一个悖论。同一个输入，同一个变换，不可能会有多个输出。
-            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_deconvolution_zh")
-    return
-
 
 
 def md_reference_zh():
@@ -442,6 +547,12 @@ def md_reference_zh():
             
             <a id="vdm" href="https://arxiv.org/pdf/2107.00630"> [15] Variational Diffusion Models </a>
             
+            <a id="entropy" href="https://en.wikipedia.org/wiki/Entropy"> [16] Entropy </a>
+            
+            <a id="cond_entropy" href="https://en.wikipedia.org/wiki/Conditional_entropy"> [17] Conditional Entropy </a>
+            
+            <a id="dsm" href="https://www.iro.umontreal.ca/~vincentp/Publications/smdae_techreport_1358_v1.pdf"> [18] A Connection Between Score Matching and Denoising autoencoders </a>
+            
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_reference_zh")
 
     return
@@ -466,7 +577,7 @@ def md_about_zh():
 
 def run_app():
     
-    # with gr.Blocks(css=g_css, js="() => insert_special_formula(); ", head=js_head) as demo:
+    # with gr.Blocks(css=g_css, js="() => insert_special_formula() ", head=js_head) as demo:
     with gr.Blocks(css=g_css, js="() => {insert_special_formula(); write_markdown();}", head=js_head) as demo:
         md_introduction_zh()
 
@@ -485,7 +596,11 @@ def run_app():
         md_posterior_transform_zh()
         
         md_deconvolution_zh()
-         
+        
+        md_cond_kl_zh()
+        
+        md_proof_ctr_zh()
+
         md_reference_zh()
          
         md_about_zh()

@@ -13,7 +13,8 @@ from DPMInteractive import fixed_point_init_change, fixed_point_apply_iterate
 from DPMInteractive import forward_plot_part, backward_plot_part, fit_plot_part, fixed_plot_part
 from RenderMarkdown import md_introduction_block, md_transform_block, md_likelihood_block, md_posterior_block
 from RenderMarkdown import md_forward_process_block, md_backward_process_block, md_fit_posterior_block
-from RenderMarkdown import md_posterior_transform_block, md_deconvolution_block, md_reference_block, md_about_block
+from RenderMarkdown import md_posterior_transform_block, md_deconvolution_block, md_cond_kl_block, md_proof_ctr_block
+from RenderMarkdown import md_reference_block, md_about_block
 from Misc import g_css, js_head, js_load
 
 
@@ -314,7 +315,7 @@ def run_app():
         md_introduction_block()
 
         md_transform_block()
-
+ 
         rets = transform_block()
         trans_param = rets
 
@@ -345,9 +346,15 @@ def run_app():
         
         md_deconvolution_block()
 
+        md_cond_kl_block()
+        
+        md_proof_ctr_block()
+        
         md_reference_block()
         
         md_about_block()
+
+        gr.Markdown("<div><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div>", visible=True)
 
         # running initiation consecutively because of the bug of multithreading rendering mathtext in matplotlib
         demo.load(trans_param["method"], trans_param["inputs"], trans_param["outputs"], show_progress="minimal").\
@@ -387,7 +394,7 @@ def gtx():
         md_reference_block()
         
         md_about_block()
-    
+        
     demo.queue()
     demo.launch(allowed_paths=["/"])
     return
