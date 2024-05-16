@@ -246,12 +246,12 @@ def md_fit_posterior_zh():
             \begin{align}
                 loss &= -\iint q(z_{t-1},z_t)\ \log \textcolor{blue}{p(z_{t-1}|z_t)}dz_{t-1}dz_t                                                                                            \tag{6.8}           \newline
                      &= -\iint \int q(x)q(z_{t-1}, z_t|x)dx\ \log \textcolor{blue}{p(z_{t-1}|z_t)}dz_{t-1}dz_t                                                                              \tag{6.9}           \newline
-                     &= \overbrace{\iint \int q(x)q(z_{t-1}, z_t|x) \log q(z_{t-1}|z_t,x)dxdz_{t-1}dz_t}^{\text{This Term Is Constant And Is Represented By}\ \textcolor{orange}{C_1}}      \tag{6.10}          \newline
+                     &= \overbrace{\iint \int q(x)q(z_{t-1}, z_t|x) \log q(z_{t-1}|z_t,x)dxdz_{t-1}dz_t}^{\text{This Term Is Constant And Is Denoted As}\ \textcolor{orange}{C_1}}          \tag{6.10}          \newline
                      &\quad - \iint \int q(x)q(z_{t-1}, z_t|x) \log \textcolor{blue}{p(z_{t-1}|z_t)}dxdz_{t-1}dz_t - \textcolor{orange}{C_1}                                                \tag{6.11}          \newline
                      &= \iint \int q(x)q(z_{t-1},z_t|x) \log \frac{q(z_{t-1}|z_t,x)}{\textcolor{blue}{p(z_{t-1}|z_t)}}dxdz_{t-1}dz_t - \textcolor{orange}{C_1}                              \tag{6.12}          \newline
-                     &= \iint q(x)q(z_t|x)\int q(z_{t-1}|z_t,x) \log \frac{q(z_{t-1}|z_t,x)}{\textcolor{blue}{p(z_{t-1}|z_t)}}dz_{t-1}\ dz_xdz_t - \textcolor{orange}{C_1}                  \tag{6.13}          \newline
-                     &= \iint \ q(x)q(z_t|x) KL(q(z_{t-1}|z_t,x) \Vert \textcolor{blue}{p(z_{t-1}|z_t)})dxdz_t - \textcolor{orange}{C_1}                                                         \tag{6.14}          \newline
-                     &\propto \iint \ q(x)q(z_t|x) KL(q(z_{t-1}|z_t,x) \Vert \textcolor{blue}{p(z_{t-1}|z_t)})dxdz_t                                                                             \tag{6.15}          \newline
+                     &= \iint q(x)q(z_t|x)\int q(z_{t-1}|z_t,x) \log \frac{q(z_{t-1}|z_t,x)}{\textcolor{blue}{p(z_{t-1}|z_t)}}dz_{t-1}\ dz_tdx - \textcolor{orange}{C_1}                   \tag{6.13}          \newline
+                     &= \iint \ q(x)q(z_t|x) KL(q(z_{t-1}|z_t,x) \Vert \textcolor{blue}{p(z_{t-1}|z_t)}) dz_t dx - \textcolor{orange}{C_1}                                                  \tag{6.14}          \newline
+                     &\propto \iint \ q(x)q(z_t|x) KL(q(z_{t-1}|z_t,x) \Vert \textcolor{blue}{p(z_{t-1}|z_t)}) dz_t dx                                                                      \tag{6.15}          \newline
             \end{align}
 
             上式中的$C_1$项是一个固定值，不包含待优化的参数，其中，$q(x)$是固定的概率分布，$q(z_{t-1}|z_t)$也是固定概率分布，具体形式由$q(x)$及系数$\alpha$确定。
@@ -267,13 +267,13 @@ def md_fit_posterior_zh():
              
             根据一致项证明的结论，以及交叉熵与KL散度的关系，可得出一个有趣的结论：
             <span id="zh_fit_1">
-                \mathop{\min}{underline}{\textcolor{blue}{p}} \int q(z_t) KL(q(z_{t-1}|z_t) \Vert \textcolor{blue}{p(z_{t-1}|z_t)})dz_t  \iff  \mathop{\min}{underline}{\textcolor{blue}{p}} \iint \ q(x)q(z_t|x) KL(q(z_{t-1}|z_t,x) \Vert \textcolor{blue}{p(z_{t-1}|z_t)})dxdz_t
+                \mathop{\min}{underline}{\textcolor{blue}{p}} \int q(z_t) KL(q(z_{t-1}|z_t) \Vert \textcolor{blue}{p(z_{t-1}|z_t)})dz_t  \iff  \mathop{\min}{underline}{\textcolor{blue}{p}} \iint \ q(z_t)q(x|z_t) KL(q(z_{t-1}|z_t,x) \Vert \textcolor{blue}{p(z_{t-1}|z_t)})dxdz_t           \tag{6.19}
             </span>
-            比较左右两边的式子，可以看出，右边的目标函数比左边的目标函数多了一个条件变量$X$，同时也多了一个关于$X$积分，并且以$X$的发生的概率$q(x)$作为积分的加权系数。
+            比较左右两边的式子，可以看出，右边的目标函数比左边的目标函数多了一个条件变量$X$，同时也多了一个关于$X$积分，并且以$X$的发生的概率$q(x|z_t)$作为积分的加权系数。
             
             依照类似的思路，可推导出一个更通用的关系：
             <span id="zh_fit_2">
-                \mathop{\min}{underline}{\textcolor{blue}{p}}  KL(q(z) \Vert \textcolor{blue}{p(z)})  \iff  \mathop{\min}_{\textcolor{blue}{p}} \int \ q(x) KL(q(z|x) \Vert \textcolor{blue}{p(z)})dx
+                \mathop{\min}{underline}{\textcolor{blue}{p}}  KL(q(z) \Vert \textcolor{blue}{p(z)})  \iff  \mathop{\min}_{\textcolor{blue}{p}} \int \ q(x) KL(q(z|x) \Vert \textcolor{blue}{p(z)})dx               \tag{6.20}
             </span>
             关于此结论的详细推导，可见<a href="#cond_kl">Appendix A</a>。
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_fit_posterior_zh")
@@ -371,7 +371,7 @@ def md_cond_kl_zh():
             \begin{align}
                \mathbf{H}(Z|X) \le \mathbf{H}(Z)         \tag{A.3}
             \end{align}
-            也就是说，条件熵总是小于或者等于熵，当且仅当X与Z相互独立时，两者相等。此关系的证明可看文献<a href="#cond_entropy">[17]</a>。
+            也就是说，<b>条件熵总是小于或者等于熵</b>，当且仅当X与Z相互独立时，两者相等。此关系的证明可看文献<a href="#cond_entropy">[17]</a>。
             
             <h3 style="font-size:18px"> KL散度及条件KL散度 </h3>
             仿照条件熵定义的方式，引入一个新定义，<b>条件KL散度</b>，记为$KL_{\mathcal{C}}$。由于KL散度的定义是非对称的，所以存在两种形式，如下：
@@ -380,12 +380,12 @@ def md_cond_kl_zh():
                KL_{\mathcal{C}}(q(z) \Vert \textcolor{blue}{p(z|x)}) = \int \ \textcolor{blue}{p(x)} KL(q(z) \Vert \textcolor{blue}{p(z|x)})dx      \tag{A.5}
             \end{align}
             
-            与条件熵类似，条件KL散度也存在类似的不等式关系：
+            与条件熵类似，<b>两种形式的条件KL散度</b>也都存在类似的不等式关系：
             \begin{align}
                KL_{\mathcal{C}}(q(z|x) \Vert \textcolor{blue}{p(z)}) \ge KL(q(z) \Vert \textcolor{blue}{p(z)})        \tag{A.6}   \newline
                KL_{\mathcal{C}}(q(z) \Vert \textcolor{blue}{p(z|x)}) \ge KL(q(z) \Vert \textcolor{blue}{p(z)})        \tag{A.7}
             \end{align}
-            也就是说，条件KL散度总是大于或者等于KL散度，当且仅当X与Z相互独立时，两者相等。
+            也就是说，<b>条件KL散度总是大于或者等于KL散度</b>，当且仅当X与Z相互独立时，两者相等。
              
             下面对式A.5和式A.6的结论分别证明。
             
@@ -393,7 +393,7 @@ def md_cond_kl_zh():
             \begin{align}
                 KL_{\mathcal{C}}(q(z|x) \Vert \textcolor{blue}{p(z)}) &= \int \ q(x) KL(q(z|x) \Vert \textcolor{blue}{p(z)})dx      \tag{A.8}    \newline
                     &= \iint q(x) q(z|x) \log \frac{q(z|x)}{\textcolor{blue}{p(z)}}dzdx                                             \tag{A.9}    \newline
-                    &= -\overbrace{\iint - q(x)q(z|x) \log q(z|x) dzdx}^{\text{Condtional Entropy }\mathbf{H}_q(Z|X)} - \iint q(x) q(z|x) \log \textcolor{blue}{p(z)} dzdx          \tag{A.10}   \newline
+                    &= -\overbrace{\iint - q(x)q(z|x) \log q(z|x) dzdx}^{\text{Conditional Entropy }\mathbf{H}_q(Z|X)} - \iint q(x) q(z|x) \log \textcolor{blue}{p(z)} dzdx          \tag{A.10}   \newline
                     &= -\mathbf{H}_q(Z|X) - \int \left\lbrace \int q(x) q(z|x)dx \right\rbrace \log \textcolor{blue}{p(z)}dz                                                        \tag{A.11}   \newline
                     &= -\mathbf{H}_q(Z|X) + \overbrace{\int - q(z) \log p(z)dz}^{\text{Cross Entropy}}                                                                              \tag{A.12}   \newline
                     &= -\mathbf{H}_q(Z|X) + \int q(z)\left\lbrace \log\frac{q(z)}{\textcolor{blue}{p(z)}} -\log q(z)\right\rbrace dz                                                \tag{A.13}   \newline
@@ -405,11 +405,11 @@ def md_cond_kl_zh():
             
             对于式A.7，证明如下：
             \begin{align}
-                KL(\textcolor{blue}{q(z)} \Vert p(z)) &= \int \textcolor{blue}{q(z)}\log\frac{\textcolor{blue}{q(z)}}{p(z)}dx    \tag{A.15}          \newline
-                        &= \int q(z)\log\frac{q(z)}{\int p(z|x)p(z)dz}dz 						 	\tag{A.16}          \newline
+                KL(\textcolor{blue}{q(z)} \Vert p(z)) &= \int \textcolor{blue}{q(z)}\log\frac{\textcolor{blue}{q(z)}}{p(z)}dz    \tag{A.15}          \newline
+                        &= \int q(z)\log\frac{q(z)}{\int p(z|x)p(x)dx}dz 						 	\tag{A.16}          \newline
                         &= \textcolor{orange}{\int p(x)dx}\int q(z)\log q(z)dz - \int q(z)\textcolor{red}{\log\int p(z|x)p(x)dx}dz	\qquad \ \textcolor{orange}{\int p(x)dx=1}			    \tag{A.17}      \newline
                         &\le \iint p(x) q(z)\log q(z)dzdx - \int q(z)\textcolor{red}{\int p(x)\log p(z|x)dx}dz \ \qquad 	 \textcolor{red}{\text{jensen\ inequality}}                     \tag{A.18}      \newline
-                        &= \iint p(x)q(z)\log q(z)dzdx - \iint p(z)q(z)\log p(z|x)dzdx			 	    \tag{A.19}          \newline
+                        &= \iint p(x)q(z)\log q(z)dzdx - \iint p(x)q(z)\log p(z|x)dzdx			 	    \tag{A.19}          \newline
                         &= \iint p(x)q(z)(\log q(z) - \log p(z|x))dzdx								    \tag{A.20}          \newline
                         &= \iint p(x)q(z)\log \frac{q(z)}{p(z|x)}dzdx								    \tag{A.21}          \newline
                         &= \int p(x)\left\lbrace \int q(z)\log \frac{q(z)}{p(z|x)}dz\right\rbrace dx    \tag{A.22}          \newline
