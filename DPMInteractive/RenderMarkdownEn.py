@@ -235,7 +235,7 @@ def md_fit_posterior_en():
             KL divergence can also be optimized as the objective function. KL divergence and cross-entropy are equivalent[\\[10\\]](#ce_kl)
             <span id="en_fit_0">
                 loss &= \int q(z_t) KL(q(z_{t-1}|z_t) \Vert \textcolor{blue}{p(z_{t-1}|z_t)})dz_t                                                             \tag{6.3}      \newline
-                     &= \int q(z_t) \int q(z_{t-1}|z_t) \frac{q(z_{t-1}|z_t)}{\textcolor{blue}{p(z_{t-1}|z_t)}} dz_{t-1} dz_t                            \tag{6.4}      \newline 
+                     &= \int q(z_t) \int q(z_{t-1}|z_t) \log \frac{q(z_{t-1}|z_t)}{\textcolor{blue}{p(z_{t-1}|z_t)}} dz_{t-1} dz_t                            \tag{6.4}      \newline 
                      &= -\int q(z_t)\ \underbrace{\int q(z_{t-1}|z_t) \log \textcolor{blue}{p(z_{t-1}|z_t)}dz_{t-1}}{underline}{\text{Cross Entropy}}\ dz_t + \underbrace{\int q(z_t) \int q(z_{t-1}|z_t) \log q(z_{t-1}|z_t)}{underline}{\text{Is Constant}} dz  \tag{6.5}
             </span>
 
