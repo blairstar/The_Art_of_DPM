@@ -2,8 +2,9 @@
 
 
 async function write_markdown() {
-    let names = ["introduction", "transform", "likelihood", "posterior", "forward_process", "backward_process",
-                 "fit_posterior", "posterior_transform", "deconvolution", "cond_kl", "proof_ctr", "reference", "about"];
+    let names = ["introduction", "transform", "likelihood", "posterior", "forward_process",
+                 "backward_process", "fit_posterior", "posterior_transform", "deconvolution",
+                 "cond_kl", "approx_gauss", "non_expanding", "stationary", "reference", "about"];
     // names = names.slice(-1)
     
     let data = await fetch("file/data.json").then(response => response.json());
@@ -24,8 +25,9 @@ async function write_markdown() {
 
 
 async function insert_markdown() {
-    let names = ["introduction", "transform", "likelihood", "posterior", "forward_process", "backward_process", 
-                 "fit_posterior", "posterior_transform", "deconvolution", "cond_kl", "proof_ctr", "reference", "about"];
+    let names = ["introduction", "transform", "likelihood", "posterior", "forward_process",
+                 "backward_process", "fit_posterior", "posterior_transform", "deconvolution",
+                 "cond_kl", "approx_gauss", "non_expanding", "stationary", "reference", "about"];
 
     let data = await fetch("file/data.json").then(response => response.json());
     
@@ -54,7 +56,8 @@ async function insert_markdown() {
 
 function control_language() {
     const names = ["introduction", "transform", "likelihood", "posterior", "forward_process",
-        "backward_process", "fit_posterior", "posterior_transform", "deconvolution", "cond_kl", "proof_ctr", "reference", "about"];
+                   "backward_process", "fit_posterior", "posterior_transform", "deconvolution",
+                   "cond_kl", "approx_gauss", "non_expanding", "stationary", "reference", "about"];
 
     var is_zh = document.getElementById("switch_language").checked;
     for (let i = 0; i < names.length; i++) {

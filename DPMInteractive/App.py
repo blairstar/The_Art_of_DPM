@@ -13,8 +13,8 @@ from DPMInteractive import fixed_point_init_change, fixed_point_apply_iterate
 from DPMInteractive import forward_plot_part, backward_plot_part, fit_plot_part, fixed_plot_part
 from RenderMarkdown import md_introduction_block, md_transform_block, md_likelihood_block, md_posterior_block
 from RenderMarkdown import md_forward_process_block, md_backward_process_block, md_fit_posterior_block
-from RenderMarkdown import md_posterior_transform_block, md_deconvolution_block, md_cond_kl_block, md_proof_ctr_block
-from RenderMarkdown import md_reference_block, md_about_block
+from RenderMarkdown import md_posterior_transform_block, md_deconvolution_block, md_cond_kl_block, md_approx_gauss_block
+from RenderMarkdown import md_non_expanding_block, md_stationary_block, md_reference_block, md_about_block
 from Misc import g_css, js_head, js_load
 
 
@@ -145,7 +145,7 @@ def forward_block(seq_info_state):
                 seed = gr_number("random seed", 0, 1E6, 100, 1, 0, min_width=80)
                 st_alpha = gr_number("start alpha", 0.001, 0.999, 0.98, 0.001, 3, min_width=80)
                 et_alpha = gr_number("end alpha", 0.001, 0.999, 0.98, 0.001, 3, min_width=80)
-                step = gr.Slider(label="step", value=7, minimum=2, maximum=15, step=1, min_width=80)
+                step = gr.Slider(label="step", value=7, minimum=1, maximum=15, step=1, min_width=80)
                 apply_button = gr.Button(value="apply", min_width=80)
         
             node_plot = gr.Plot(label="latent variable's pdf", show_label=False)
@@ -236,7 +236,7 @@ def contraction_block():
                     with gr.Row():
                         ctr_init_seed = gr_number("random seed", 0, 1E6, 100, 1, 0, min_width=80)
                         ctr_alpha = gr_number("alpha", 0.001, 0.999, 0.95, 0.001, 3, min_width=80)
-                        gr_empty_space(5)
+                        lambda_2 = gr_number("second largest eigenvalue", 0, 0, 1.0, 0.0001, 4, min_width=80)
 
                     with gr.Row():
                         inp_plot = gr.Plot(label="input variable pdf", min_width=80, show_label=False)
@@ -265,11 +265,11 @@ def contraction_block():
                 power_mat_plot = gr.Plot(show_label=False)
     
     ctr_init_inputs = [ctr_init_seed, ctr_alpha, two_inputs_seed]
-    ctr_init_outputs = [inp_plot, x_state, x_pdf_state, pos_plot, out_plot, z_state, xcz_pdf_state, inp_out_plot]
+    ctr_init_outputs = [inp_plot, x_state, x_pdf_state, pos_plot, out_plot, z_state, xcz_pdf_state, inp_out_plot, lambda_2]
     ctr_init_seed.change(contraction_init_change, ctr_init_inputs, ctr_init_outputs, show_progress="minimal")
     
     ctr_alpha_inputs = [x_state, x_pdf_state, ctr_alpha, two_inputs_seed]
-    ctr_alpha_outputs = [pos_plot, out_plot, z_state, xcz_pdf_state, inp_out_plot]
+    ctr_alpha_outputs = [pos_plot, out_plot, z_state, xcz_pdf_state, inp_out_plot, lambda_2]
     ctr_alpha.change(contraction_alpha_change, ctr_alpha_inputs, ctr_alpha_outputs, show_progress="minimal")
     
     ctr_apply_inputs, ctr_apply_outputs = [x_state, x_pdf_state, xcz_pdf_state, two_inputs_seed], [inp_out_plot]
@@ -348,7 +348,11 @@ def run_app():
 
         md_cond_kl_block()
         
-        md_proof_ctr_block()
+        md_approx_gauss_block()
+        
+        md_non_expanding_block()
+        
+        md_stationary_block()
         
         md_reference_block()
         

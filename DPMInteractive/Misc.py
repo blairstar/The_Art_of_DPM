@@ -18,7 +18,7 @@ g_css = """
         .first_md span{font-size: 140%; font-weight: bold; color: orange}
         .normal span{font-size: 100%; font-weight: normal; color: black}
         .second span{font-size: 100%; font-weight: bold; color: blue}
-        .mds div{margin-top: 10px; margin-bottom: 20px; margin-left:10px; margin-right:10px; font-size:16px}
+        .mds div{margin-top: 10px; margin-bottom: 20px; margin-left:10px; margin-right:10px; font-size:16px;}
         .gps div{margin-top: 10px; margin-bottom: 20px;}
 
         .switchbar {position: relative; display: inline-block; width: 60px; height: 30px; margin-left: 10px; margin-right: 10px}

@@ -78,31 +78,45 @@ def md_posterior_zh():
                 q(x|z) = \frac{q(z|x)q(x)}{q(z)}    \tag{3.1}
             \end{align}
 
-            当$z$是取固定值时，$q(z)$是常数，所以$q(x|z)$的形状只与${q(z|x)q(x)}$有关。
+            当$z$是取固定值时，$q(z)$是常数，所以$q(x|z)$是关于$x$的概率密度函数，并且其形状只与${q(z|x)q(x)}$有关。
             \begin{align}
-                q(x|z)  \propto q(z|x)q(x) 	\qquad where\ z\ is\ fixed  \tag{3.2}
+                q(x|z)  &=\propto q(z|x)q(x) 	\qquad \text{where z is fixed}  \tag{3.2}
             \end{align}
+            
+            实际上，$q(z)=\int q(z|x)q(x)dx$，也就是说，$q(z)$是对函数$q(z|x)q(x)$遍历$x$求和，所以，$q(z|x)q(x)$除以$q(z)$相当于对$q(z|x)q(x)$执行归一化。
+            \begin{align}
+                q(x|z) = \operatorname{Normalize}\big(q(z|x)q(x)\big)  \tag{3.3}
+            \end{align}
+            
             由式2.1可知，$q(z|x)$为高斯分布，于是有
             \begin{align}
-                q(x|z)  &\propto \frac{1}{\sqrt{2\pi(1-\alpha)}}\exp{\frac{-(z-\sqrt{\alpha}x)^2}{2(1-\alpha)}}\ q(x)& 	\qquad &where\ z\ is\ fixed      \tag{3.3}   \newline
-                        &=	\frac{1}{\sqrt{\alpha}} \underbrace{\frac{1}{\sqrt{2\pi}\sigma}\exp{\frac{-(x-\mu)^2}{2\sigma^2}}}_{\text{GaussFun}}\ q(x)& \qquad &where\ \mu=\frac{z}{\sqrt{\alpha}}\quad \sigma=\sqrt{\frac{1-\alpha}{\alpha}}   \tag{3.4}
+                q(x|z)  &\propto \frac{1}{\sqrt{2\pi(1-\alpha)}}\exp{\frac{-(z-\sqrt{\alpha}x)^2}{2(1-\alpha)}}\ q(x)& 	\qquad &\text{where z is fixed}     \notag   \newline
+                        &= \frac{1}{\sqrt{\alpha}}\frac{1}{\sqrt{2\pi\frac{1-\alpha}{\alpha}}}\exp{\frac{-(\frac{z}{\sqrt{\alpha}}-x)^2}{2\frac{1-\alpha}{\alpha}}}\ q(x)& 	     \notag     \newline
+                        &= \frac{1}{\sqrt{\alpha}} \underbrace{\frac{1}{\sqrt{2\pi}\sigma}\exp{\frac{-(x-\mu)^2}{2\sigma^2}}}_{\text{GaussFun}}\ q(x)& \qquad &\text{where}\ \mu=\frac{z}{\sqrt{\alpha}}\quad \sigma=\sqrt{\frac{1-\alpha}{\alpha}}   \tag{3.4}
             \end{align}
 
-            可以看出，<b>GaussFun</b>部分是关于$x$的高斯函数，均值为$\frac{z}{\sqrt{\alpha}}$，方差为$\sqrt{\frac{1-\alpha}{\alpha}}$，所以$q(x|z)$的形状由“<b>GaussFun与$q(x)$相乘</b>”决定。
+            可以看出，<b>GaussFun</b>部分是关于$x$的高斯函数，均值为$\frac{z}{\sqrt{\alpha}}$，标准差为$\sqrt{\frac{1-\alpha}{\alpha}}$，所以$q(x|z)$的形状由“<b>GaussFun与$q(x)$相乘</b>”决定。
 
             根据”乘法“的特点，可以总结$q(x|z)$函数形状具有的特点。
             <ul>
-                <li> 当高斯函数的方差较小(较小噪声)，或者$q(x)$变化缓慢时，$q(x|z)$的形状将近似于高斯函数，函数形式较简单，方便建模学习。</li>
+                <li> $q(x|z)$的支撑集应该包含于GaussFun的支撑集，GaussFun的支撑集是一个超球体，中心位于均值$\mu$，半径约为3倍标准差$\sigma$。</li>
+                <li> 当高斯函数的方差较小(较小噪声)，或者$q(x)$线性变化时，$q(x|z)$的形状将近似于高斯函数，函数形式较简单，方便建模学习。</li>
                 <li> 当高斯函数的方差较大(较大噪声)，或者$q(x)$剧烈变化时，$q(x|z)$的形状将较复杂，与高斯函数有较大的差别，难以建模学习。</li>
             </ul>
+            
+            <a href="#approx_gauss">Appendix B</a>给出了较严谨的分析，当$\sigma$满足一些条件时，$q(x|z)$的近似于高斯分布。
             
             具体可看<a href="#demo_2">Demo 2</a>，左4图给出后验概率分布$q(x|z)$的形态，可以看出，其形状较不规则，像一条弯曲且不均匀的曲线。当$\alpha$较大时(噪声较小)，曲线将趋向于均匀且笔直。读者可调整不同的$\alpha$值，观察后验概率分布与噪声大小的关系；左5图，$\textcolor{blue}{蓝色虚线}$给出$q(x)$，$\textcolor{green}{绿色虚线}$给出式3.4中的GaussFun，$\textcolor{orange}{黄色实线}$给出两者相乘并归一化的结果，即固定z条件下后验概率$q(x|z=fixed)$。读者可调整不同z值，观察$q(x)$的波动变化对后验概率$q(x|z)$形态的影响。
             
             两个特殊状态下的后验概率分布$q(x|z)$值得考虑一下。
             <ul>
-                <li> 当$\alpha \to 0$时，GaussFun的方差趋向于<b>无穷大</b>，不同$z$值的$q(x|z)$几乎变成一致，并与$q(x)$几乎相同。读者可在<a href="#demo_2">Demo 2</a>中，将$\alpha$设置为0.01，观察具体的结果。</li>
-                <li> 当$\alpha \to 1$时，GaussFun的方差趋向于<b>无穷小</b>，不同$z$值的$q(x|z)$收缩成一系列不同偏移量的Dirac delta函数, 偏移量等于$z$。但有一些例外，当q(x)存在为零的区域时，其对应的q(x|z)将不再为Dirac delta函数，而是零函数。可在<a href="#demo_2">Demo 2</a>中，将$\alpha$设置为0.999，观察具体的结果。</li>
+                <li> 当$\alpha \to 0$时，GaussFun的标准差趋向于<b>无穷大</b>，GaussFun变成一个很大支撑集的近似的均匀分布，$q(x)$与均匀分布<b>相乘</b>结果仍为$q(x)$，所以，不同$z$值对应的$q(x|z)$几乎变成一致，并与$q(x)$几乎相同。读者可在<a href="#demo_2">Demo 2</a>中，将$\alpha$设置为0.001，观察具体的结果。</li>
+                <li> 当$\alpha \to 1$时，GaussFun的标准差趋向于<b>无穷小</b>，不同$z$值的$q(x|z)$收缩成一系列不同偏移量的Dirac delta函数, 偏移量等于$z$。但有一些例外，当$q(x)$存在为零的区域时，其对应的$q(x|z)$将不再为Dirac delta函数，而是零函数。可在<a href="#demo_2">Demo 2</a>中，将$\alpha$设置为0.999，观察具体的结果。</li>
             </ul>
+            
+            有一点需要注意一下，当$\alpha \to 0$时，较大$z$值对应的GaussFun的均值($\mu=\frac{z}{\sqrt{\alpha}}$)也急剧变大，也就是说，GaussFun位于离原点较远的地方，此时，$q(x)$的支撑集对应的GaussFun部分的“均匀程度”会略微有所下降, 从而会略微降低$q(x|z)$与$q(x)$的相似度，但这种影响会随着$\alpha$减小而进一步降低。读者可在<a href="#demo_2">Demo 2</a>中观察此影响，将$\alpha$设置为0.001，$q(x|z=-2)$与$q(x)$会略微有一点差别，但$q(x|z=0)$与$q(x)$却看不出区别。
+            
+            关于高斯函数的"均匀程度"，有如下两个特点：标准差越大，均匀程度越大；离均值越远，均匀程度越小。
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_posterior_zh")
     return
 
@@ -145,18 +159,22 @@ def md_forward_process_zh():
                 q(z_t|x) &= \mathcal{N}(\sqrt{\alpha_1\alpha_2\cdots\alpha_t}x,\ 1-\alpha_1\alpha_2\cdots\alpha_t) = \mathcal{N}(\sqrt{\bar{\alpha_t}}x,\ 1-\bar{\alpha_t})  \qquad where\ \bar{\alpha_t} \triangleq \prod_{j=1}^t\alpha_j      \tag{4.8}
             \end{align}
             
-            比较式4.8和式2.1的形式，可发现，两者的形式是完全一致的。如果只关注最终变换后的分布$q(z_t)$，那么连续t次的小变换可用一次大变换替代，大变换的$\alpha$是各个小变换的$\alpha$累积。
+            比较式4.8和式2.1的形式，可发现，两者的形式是完全一致的。
+            
+            如果只关注首尾两个变量之间的关系，那么连续t次的小变换可用一次大变换替代，大变换的$\alpha$是各个小变换的$\alpha$累积，因为两种变换对应的联合概率分布相同。
+            
+            读者可在<a href="#demo_3_1">Demo 3.1</a>中做一个实验，对同样的输入分布$q(x)$，使用两种不同的变换方式：1)使用三个变换，$\alpha$均为0.95; 2)使用一个变换，$\alpha$设置为0.857375。分别执行变换，然后比较变换后的两个分布，将会看到，两个分布是完全相同的。
             
             在DDPM[\[2\]](#ddpm)论文中，作者使用了1000步(T=1000)，将数据分布$q(x)$转换至$q(z_T)$，$q(z_T|x)$的概率分布如下：
             \begin{align}
                 q(z_T|x) &= \mathcal{N}(0.00635\ x,\ 0.99998)    \tag{4.9}
             \end{align}
             
-            如果只考虑边际分布$q(z_T)$，也可使用一次变换代替，变换如下:
+            如果只考虑$X,Z_T$的联合分布$q(x,z_T)$，也可使用一次变换代替，变换如下:
             \begin{align}
                 Z_T = \sqrt{0.0000403}\ X + \sqrt{1-0.0000403}\ \epsilon = 0.00635\ X + 0.99998\ \epsilon 			 \tag{4.10}
             \end{align}
-            可以看出，应用两种变换后，变换后的分布$q(z_T|x)$相同，因此，$q(z_T)$也相同。
+            可以看出，应用两种变换后，变换后的分布$q(z_T|x)$相同，因此，$q(x, z_T)$也相同。
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_forward_process_zh")
     return
 
@@ -184,7 +202,7 @@ def md_backward_process_zh():
             
             在<a href="#posterior">第3节</a>中，我们考虑了两个特殊的后验概率分布。接下来，分析其对应的”后验概率变换“。
             <ul>
-                <li> 当$\alpha \to 0$时，不同$z$值的$q(x|z)$均与$q(x)$几乎相同，也就是说，线性加权和的基函数几乎相同。此状态下，不管输入如何变化，变换的输出总为$q(x)$。</li>
+                <li> 当$\alpha \to 0$时，不同$z$值的$q(x|z)$均与$q(x)$几乎相同，也就是说，线性加权和的基函数几乎相同。此状态下，<b>不管输入如何变化，变换的输出总为$q(x)$</b>。</li>
                 <li> 当$\alpha \to 1$时，不同$z$值的$q(x|z)$收缩成一系列不同偏移量的Dirac delta函数及零函数。此状态下，只要输入分布的支撑集(support set)包含于$q(x)$的支撑集，变换的输出与输入将保持一致。</li>
             </ul>
             
@@ -192,11 +210,13 @@ def md_backward_process_zh():
             \begin{align}
                 Z_T = \sqrt{0.0000403}\ X + \sqrt{1-0.0000403}\ \epsilon = 0.00635\ X + 0.99998\ \epsilon 			 \tag{5.5}
             \end{align}
-            由于$\alpha=0.0000403$非常小，其对应的GaussFun(式3.4)的标准差达到157.52，而$X$的范围限制在$[-1, 1]$，远小于GaussFun的标准差。在$x \in [-1, 1]$范围内，GaussFun应该接近于常量，没有什么变化，所以不同的$z_T$对应的$q(x|z_T)$均与$q(x)$几乎相同。在这种状态下，对于$q(x|z_T)$相应的后验概率变换，不管输入分布是什么，输出分布都将是$q(x)$。
+            由于$\alpha=0.0000403$非常小，其对应的GaussFun(式3.4)的标准差达到157.52。如果把$q(x)$的支撑集限制在单位超球范围内($\lVert x \rVert_2 < 1$)，那当$z_T \in [-2, +2]$时，对应的各个$q(x|z_T)$均与$q(x)$非常相似。在这种状态下，对于$q(x|z_T)$相应的后验概率变换，不管输入分布的形状的如何，只要支撑集在$[-2,+2]$范围内，其输出分布都将是$q(x)$。
             
-            <b>所以，理论上，在DDPM模型中，无需非得使用标准正态分布代替$q(z_T)$，也可使用其它任意的分布代替。</b>
+            <b>所以，可以总结，在DPM模型中，如果$q(x)$的支撑集是有限的，并且最终变量$Z_T$的信噪比足够大，那恢复$q(x)$的过程可以使用任意的分布，不必一定需要使用标准正态分布。</b>
             
             读者可亲自做一个类似的实验。在<a href="#demo_3_1">Demo 3.1</a>中，将start_alpha设置0.25，end_alpha也设置为0.25，step设置为7，此时$q(z_7)=\sqrt{0.000061}X + \sqrt{1-0.000061}\epsilon$，与DDPM的$q(z_T)$基本相似。点击<b>apply</b>执行前向变换($\textcolor{blue}{蓝色曲线}$)，为接下来的反向恢复做准备。在<a href="#demo_3_2">Demo 3.2</a>中，noise_ratio设置为1，为末端分布$q(z_7)$引入100%的噪声，切换nose_random_seed的值可改变噪声的分布，取消选择backward_pdf，减少画面的干扰。点击<b>apply</b>将通过后验概率变换恢复$q(x)$，将会看到，不管输入的$q(z_7)$的形状如何，恢复的$q(x)$均与原始的$q(x)$完全相同, JS Divergence为0，恢复的过程使用$\textcolor{red}{红色曲线}$画出。
+            
+            另外有一点值得注意一下，在深度学习任务中，常将输入样本的各个维度缩放在[-1,1]范围内，也是说在一个超立方体内(hypercube)。超立方体内任意两点的最大欧氏距离会随着维度的增多而变大，比如，对于一维，最大距离为$2$，对于二维，最大距离为$2\sqrt{2}$，对于三维，最大距离为$2\sqrt{3}$，对于n维，最大距离为$2\sqrt{n}$。所以，对于维度较高的数据，需要$Z_T$变量有更高的信噪比，才能让恢复过程的起始分布接受任意的分布。
              
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_backward_process_zh")
     return
@@ -287,19 +307,20 @@ def md_posterior_transform_zh():
 
         gr.Markdown(
             r"""
-            <h3 style="font-size:18px"> 压缩映射及收敛点 </h3>
+            <h3 style="font-size:18px"> Non-expanding mapping and Stationary Distribution </h3>
             \begin{align}
                 q(x) &= \int q(x,z) dz = \int q(x|z)q(z)dz      \tag{7.1}
             \end{align}
 
-            经过大量一维随机变量的实验发现，后验概率变换呈现出“压缩映射”(Contraction Mapping[\[6\]](#ctr))的特征。也是说，对任意的两个概率分布$q_{i1}(z)和q_{i2}(z)$，经过后验概率变换后得到$q_{o1}(x)$和$q_{o2}(x)$，$q_{o1}(z)$和$q_{o2}(z)$的距离<b>总是小于</b>$q_{i1}(x)$和$q_{i2}(x)$的距离。这里的距离可使用JS Divergence或Total Variance或度量。并且，这个压缩映射的压缩程度跟所加噪声大小正相关。
+            根据<a href="#non_expanping">Appendix B</a>的Corollary 1和Corollary 2可知，后验概率变换是一个non-expanding mapping。也是说，对任意的两个概率分布$q_{i1}(z)和q_{i2}(z)$，经过后验概率变换后得到$q_{o1}(x)$和$q_{o2}(x)$，$q_{o1}(z)$和$q_{o2}(z)$的距离<b>总是小于或等于</b>$q_{i1}(x)$和$q_{i2}(x)$的距离。这里的距离可使用KL Divergence或Total Variance或度量。
             \begin{align}
-                dist(q_{o1}(z),\ q_{o2}(z)) < dist(q_{i1}(x),\ q_{i2}(x))                   \tag{7.2}
+                d(q_{o1}(z),\ q_{o2}(z)) \le d(q_{i1}(x),\ q_{i2}(x))                   \tag{7.2}
             \end{align}
+            根据<a href="#non_expanping">Appendix B</a>的分析可知，在大多数情况，上述的等号并不会成立。并且，<b>当$\alpha$越小时(噪声越多)，$d(q_{o1},q_{o2})$会越小于$d(q_{i1},q_{i2})$</b>。
 
             读者可查看<a href="#demo_4_1">Demo 4.1</a>，左侧三个图呈现一个变换的过程，左1图是任意的数据分布$q(x)$，左3图是变换后的概率分布，左2图是后验概率分布。可更改随机种子生成新的数据分布，调整$\alpha$值引入不同程度的噪声。左侧最后两个图展示变换的“压缩性质”，左4图展示随机生成的两个输入分布，同时给出其距离度量值$div_{in}$；左5图展示经过变换后的两个输出分布，输出分布之间的距离标识为$div_{out}$。读者可改变输入的随机种子，切换不同的输入。可在图中看到，对于任意的输入，$div_{in}$总是小于$div_{out}$。另外，也可改变$\alpha$的值，将会看到，$\alpha$越小(噪声越大)，$\frac{div_{out}}{div_{in}}$的比值也越小，即收缩率越大。
             
-            由Banach fixed-point theorem<a href="#fixed_point">[5]</a>可知，压缩映射存在惟一一个定点(收敛点)。也就是说，对于任意的输入分布，可以连续迭代应用“后验概率变换”，只要迭代次数足够多，最终都会输出同一个分布。经过大量一维随机变量实验发现，定点(收敛点)<b>位于$q(x)$附近</b>。并且，与$\alpha$的值有关，$\alpha$越小(噪声越大)，离得越近。
+            根据<a href="#stationary">Appendix C</a>的分析可知：后验概率变换可视为markov chain的一步跳转，并且，<b>当$q(x)$和$\alpha$满足一些条件时，此markov chain会收敛于惟一的稳态分布</b>。另外，通过大量实验发现，<b>稳态分布与数据分布$q(x)$非常相似，当$\alpha$越小时，稳态分布与$q(x)$越相似</b>。特别地，根据<a href="#backward_process">第5节</a>的结论，<b>当$\alpha \to 0$时，经过一步变换后，输出分布即是$q(x)$，所以稳态分布必定是$q(x)$</b>。
             
             读者可看<a href="#demo_4_2">Demo 4.2</a>，此部分展示迭代收敛的例子。选择合适的迭代次数，点中“apply iteration transform”，将逐步画出迭代的过程，每个子图均会展示各自变换后的输出分布($\textcolor{green}{绿色曲线}$)，收敛的参考点分布$q(x)$以$\textcolor{blue}{蓝色曲线}$画出，同时给出输出分布与$q(x)$之间的距离$dist$。可以看出，随着迭代的次数增加，输出分布与$q(x)$越来越相似，并最终会稳定在$q(x)$附近。对于较复杂的分布，可能需要较多迭代的次数或者较大的噪声。迭代次数可以设置为上万步，但会花费较长时间。
 
@@ -311,23 +332,31 @@ def md_posterior_transform_zh():
                 \boldsymbol{q_o} &= (Q_{x|z})^n\ \boldsymbol{q_i} &         \quad\quad        &\text{n iteration}         \tag{7.5}       \newline
             \end{align}
             于是，为了更深入地理解变换的特点，<a href="#demo_4_2">Demo 4.2</a>也画出矩阵$(Q_{x|z})^n$的结果。从图里可以看到，当迭代趋向收敛时，矩阵$(Q_{x|z})^n$的行向量将变成一个常数向量，即向量的各分量都相等。在二维密度图里将表现为一条横线。
-
-            在<a href="#proof_ctr">Appendix B</a>中，将会提供一个证明，当$q(x)$和$\alpha$满足一些条件时，后验概率变换是一个严格的压缩映射。
-
-            关于定点分布与输入分布q(x)之间距离的关系，目前尚不能严格证明。
             
-            <h3 style="font-size:18px"> 恢复数据分布过程中的抗噪声能力 </h3>
-            由上面的分析可知，当满足一些条件时，"后验概率变换"是一个压缩映射，所以存在如下的关系：
+            对于一维离散的markov chain，收敛速度与转移概率矩阵的第二大特征值的绝对值($\lvert \lambda_2 \rvert$)反相关，$\lvert \lambda_2 \rvert$越小，收敛速度越快。经过大量的实验发现，$\alpha$与$\lvert \lambda_2 \rvert$有着明确的线性关系，$\alpha$越小，$\lvert \lambda_2 \rvert$也越小。所以，<b>$\alpha$越小(噪声越大)，收敛速度越快</b>。 特别地，当$\alpha \to 0$时，由<a href="#posterior">第3节</a>的结论可知，各个$z$对应的后验概率分布趋向一致，而由文献<a href="#non_neg_lambda">[21]</a>的Theorem 21可知，$\lvert \lambda_2 \rvert$小于任意两个$z$对应的后验概率分布的L1距离，所以，可知$\lvert \lambda_2 \rvert \to 0$。
+            
+            </br>
+            <h3 style="font-size:18px"> Anti-noise Capacity In Restoring Data Distribution </h3>
+            由上面的分析可知，在大多数情况下，"后验概率变换"是一个收缩映射，所以存在如下的关系：
             \begin{align}
-                dist(q(x),\ q_o(x)) < dist(q(z),\ q_i(z))         \tag{7.12}
+                d(q(x),\ q_o(x)) < d(q(z),\ q_i(z))         \tag{7.12}
             \end{align}
-            其中，$q(z)$是理想的输入分布，$q(x)$理想的输出分布，$q_i(x)$是任意的输入分布，$q_o(x)$是$q_i(z)$经过变换后的输出分布。
+            其中，$q(z)$是理想的输入分布，$q(x)$理想的输出分布，$q(x)=\int q(x|z)q(z)dz$，$q_i(z)$是任意的输入分布，$q_o(x)$是变换后的输出分布，$q_o(x)=\int q(x|z)q_i(z)dz$。
             
-            上式表明，输出的分布$q_o(x)$与理想输出分布q(x)之间的距离总会</em>小于</em>输入分布$q_i(z)$与理想输入分布q(x)的距离。于是，"后验概率变换"具备一定的抵抗噪声能力。这意味着，在恢复$q(x)$的过程中(<a href="#backward_process">第5节</a>)，哪怕输入的“末尾分布$q(z_T)”$存在一定的误差，经过一系列变换后，输出的“数据分布$q(x)$“的误差也会比输入的误差更小。
+            上式表明，输出的分布$q_o(x)$与理想输出分布$q(x)$之间的距离总会<b>小于</b>输入分布$q_i(z)$与理想输入分布$q(x)$的距离。所以，<b>”后验概率变换“天然具备一定的抵抗噪声能力</b>。这意味着，在恢复$q(x)$的过程中(<a href="#backward_process">第5节</a>)，哪怕输入的“末尾分布$q(z_T)”$存在一定的误差，经过一系列变换后，输出的“数据分布$q(x)$“的误差也会比输入的误差更小。
             
             具体可看<a href="#demo_3_2">Demo 3.2</a>，通过增加“noise ratio”的值可以向“末尾分布$q(z_T)$”添加噪声，点击“apply”按钮将逐步画出恢复的过程，恢复的分布以$\textcolor{red}{红色曲线}$画出，同时也会通过JS散度标出误差的大小。将会看到，恢复的$q(x)$的误差总是小于$q(z_T)$的误差。
             
-            由上面的讨论可知，$\alpha$越小(即变换过程中使用的噪声越大)，压缩映射的压缩率越大，于是，抗噪声的能力也越强。
+            由上面的讨论可知，$\alpha$越小(即变换过程中使用的噪声越大)，收缩映射的收缩率越大，相应地，抗噪声的能力也越强。特别地，当$\alpha \to 0$时，抗噪声能力无限大，不论多大噪声的输入，输出都为$q(x)$。
+            
+            </br>
+            <h3 style="font-size:18px"> Markov Chain Monte Carlo Sampling</h3>
+            
+            在DPM模型中，通常是通过Ancestral Sampling的方式进行采样。由上面的分析可知，当$\alpha$足够小时，后验概率变换会收敛于$q(x)$，所以，可通过Markov Chain Monte Carlo的方式进行采样。如图7.1所示。图中$\alpha$代表一个较大的噪声的后验概率变换，较大的噪声使稳态分布更接近于数据分布$q(x)$，但由<a href="#posterior">第3节</a>可知，较大噪声的后验变换不利于拟合，所以把较大噪声的后验概率变换分成多个小噪声的后验概率变换。
+            
+            <center> <img src="file/7.1.png" width="1024" style="margin-top:12px"/> </center>
+            <center> Figure 7.1: Markov Chain Monte Carlo Sampling</center>
+            
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_posterior_transform_zh")
     return
 
@@ -439,74 +468,272 @@ def md_cond_kl_zh():
     return
 
 
-def md_proof_ctr_zh():
+def md_approx_gauss_zh():
     global g_latex_del
 
-    title = "Appendix B Proof of Contraction"
-    with gr.Accordion(label=title, elem_classes="first_md", elem_id="proof_ctr"):
+    title = "Appendix B When does the Posterior Approximate to Gaussian ?"
+    with gr.Accordion(label=title, elem_classes="first_md", elem_id="approx_gauss"):
         gr.Markdown(
             r"""
-            <center> <img src="file/fig2.png" width="960" style="margin-top:12px"/> </center>
-            <center> Figure 2: Only one component in support </center>
+            由式3.4可知，$q(x|z)$有如下的形式
+            \begin{align}
+                q(x|z)  &=  \operatorname{Normalize} \Big(\  \frac{1}{\sqrt{2\pi}\sigma}\exp{\frac{-(x-\mu)^2}{2\sigma^2}}\ q(x)\ \Big)& \qquad &\text{where}\ \mu=\frac{z}{\sqrt{\alpha}}\quad \sigma=\sqrt{\frac{1-\alpha}{\alpha}}       \tag{B.1}   \newline
+                &\propto \underbrace{\frac{1}{\sqrt{2\pi}\sigma}\exp{\frac{-(x-\mu)^2}{2\sigma^2}}}_{\text{GaussFun}}\ q(x)     \tag{B.2}
+            \end{align}
+
+            下面证明，如果满足如下两个假设，$q(x|z)$近似于高斯分布。
+            <ul>
+            <li>
+            假设在GaussFun的支撑集内，$q(x)$是线性变化的。以GaussFun的均值为中心，对$q(x)$进行泰勒展开。由泰勒展开的性质可知，当GaussFun的标准差$\sigma$足够小时，上述假设可以满足。
+            \begin{align}
+                q(x) &\approx  q(\mu) + \nabla_xq(\mu)(x-\mu)& \quad &\text{where}\quad q(\mu)\triangleq q(x)\bigg|_{x=\mu} \quad \nabla_xq(\mu)\triangleq \nabla_xq(x)\bigg|_{x=\mu}       \tag{B.3}   \newline
+                      &= q(\mu)\big(1+ \frac{\nabla_xq(\mu)}{q(\mu)}(x-\mu)\big)&	    \tag{B.4}   \newline
+                      &= q(\mu)\big(1+ \nabla_x\log{q(\mu)}(x-\mu)\big)& \quad &\text{where}\quad \nabla_x\log{q(\mu)}\triangleq \nabla_x\log{q(x)}\bigg|_{x=\mu}       \tag{B.5}
+            \end{align}
+            </li>
+            <li>
+            假设在GaussFun的支撑集内，$\log\big(1+\nabla_x\log{q(\mu)}(x-\mu)\big)$可近似为 $\nabla_x\log{q(\mu)}(x-\mu)$。对$\log(1+y)$进行泰勒展开，由泰勒展开的性质可知，当$\lVert y\rVert_2$较小时，$\log(1+y)$可近似为$y$。当$\sigma$足够小时，$\lVert x-u\rVert_2$将较小，$\nabla_x\log{q(\mu)}(x-\mu)$也将较小，所以上述假设可以满足。一般情况下，当$\nabla_x\log{q(\mu)}(x-\mu)<0.1$时，近似的误差较小，可忽略。
+            \begin{align}
+                \log(1+y) &\approx \log(1+y)\bigg|_{y=0} + \nabla_y\log(1+y)\bigg|_{y=0}(y-0)       \tag{B.6}   \newline
+                          &= y              \tag{B.7}
+            \end{align}
+            </li>
+            </ul>
+            利用上面的两个假设，可对$q(x|z)$进行如下的推导：
+
+            \begin{align}
+                q(x|z) &\propto \frac{1}{\sqrt{2\pi}\sigma}\exp{\frac{-(x-\mu)^2}{2\sigma^2}}\ q(x)        \tag{B.8}   \newline
+                       &\approx \frac{1}{\sqrt{2\pi}\sigma}\exp{\frac{-(x-\mu)^2}{2\sigma^2}}\  q(\mu)\big(1+ \nabla_x\log{q(\mu)}(x-\mu)\big)          \tag{B.9}   \newline
+                       &= \frac{q(\mu)}{\sqrt{2\pi}\sigma}\exp\left(\frac{-(x-\mu)^2}{2\sigma^2}+\log\big(1+ \nabla_x\log{q(\mu)}(x-\mu)\big)\right)    \tag{B.10}  \newline
+                       &\approx \frac{q(\mu)}{\sqrt{2\pi}\sigma}\exp\left(\frac{-(x-\mu)^2}{2\sigma^2}+\nabla_x\log{q(\mu)}(x-\mu)\right)               \tag{B.11}  \newline
+                       &= \frac{q(\mu)}{\sqrt{2\pi}\sigma}\exp\left(-\frac{(x-\mu)^2-2\sigma^2\nabla_x\log{q(\mu)}(x-\mu)}{2\sigma^2}\right)            \tag{B.12}  \newline
+                       &= \frac{q(\mu)}{\sqrt{2\pi}\sigma}\exp\left(-\frac{\big(x-\mu-\sigma^2\nabla_x\log{q(\mu)}\big)^2}{2\sigma^2}+\frac{\big(\sigma^2\nabla_x\log{q(\mu)}\big)^2}{2\sigma^2}\right)             \tag{B.13}   \newline
+                       &= \exp\left(-\frac{\big(x-\mu-\sigma^2\nabla_x\log{q(\mu)}\big)^2}{2\sigma^2}\right) \underbrace{\frac{q(\mu)}{\sqrt{2\pi}\sigma} \exp\left( \frac{1}{2}\big(\sigma\nabla_x\log{q(\mu)}\big)^2\right)}_{\text{const}}       \tag{B.14}
+            \end{align}
+
+            其中，式B.9应用了假设1的结论，式B.11应用了假设2的结论。
+
+            式B.14中的const项是常数项，不会影响函数的形状。另外，由上面可知，$q(x|z)$具有自归一化的功能，所以，$q(x|z)$是一个高斯概率密度函数，均值为$\mu+\sigma^2\nabla_x\log{q(\mu)}$，方差为$\sigma^2$。
+            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_approx_gauss_zh")
+
+    return
+
+
+def md_non_expanding_zh():
+    global g_latex_del
+
+    title = "Appendix C Posterior Transform is a Non-expanding Mapping"
+    with gr.Accordion(label=title, elem_classes="first_md", elem_id="non_expanding"):
+        gr.Markdown(
+            r"""
+            <b>Corollary 1</b>
             
-            本节将证明，当$q(x)$及$\alpha$满足一些条件时，后验概率变换是一个压缩映射，并存在惟一收敛点。
+            以KL Divergence为度量，markov chain的转移变换是non-expanding的<a href="#elem">[23]</a>，即
+            \begin{align}
+                KL\big(p(x), q(x)\big) &\le KL\big(p(z), q(z)\big)          \tag{C.1} \newline
+            \end{align}
+            其中，$p(z)$和$q(z)$是任意的概率密度函数，$r(x|z)$是markov chain的转移概率密度函数，$p(x) = \int r(x|z)p(z)dz$，$q(x) = \int r(x|z) q(z) dz$。
             
-            下面分四种情况进行证明。证明的过程假设随机变量是离散型的，因此，后验概率变换可看作是一个<b>离散Markov Chain</b>的一步转移，后验概率$q(x|z)$对应于<b>转移矩阵</b>(Transfer Matrix)。连续型的变量可认为是无限多状态的离散型变量。
+            证明：
+            
+            对于$p(x,z)$和$q(x,z)$的KL divergence，存在如下的关系：
+            \begin{align}
+                KL\big(p(x,z), q(x,z)\big) &= \iint p(x,z)\log \frac{p(x,z)}{q(x,z)}dxdz    \tag{C.2} \newline
+                & = \iint p(x,z)\log \frac{p(x)p(x|z)}{q(x)q(x|z)}dxdz                      \tag{C.3} \newline
+                &= \iint p(x,z)\log \frac{p(x)}{q(x)}dxdz + \iint p(x,z) \log\frac{p(x|z)}{q(x|z)} dxdz     \tag{C.4} \newline
+                &= \int \int p(x,z) dz\ \log \frac{p(x)}{q(x)}dx + \int p(z)\int p(x|z) \log\frac{p(x|z)}{q(x|z)} dx\ dz    \tag{C.5} \newline
+                &= KL\big(p(x), q(x)\big) + \int p(z) KL\big(p(x|z), q(x|z)\big)dz      \tag{C.6} \newline
+            \end{align}
+            
+            类似地，调换$Z$和$X$的顺序，可得到下面的关系：
+            \begin{align}
+                KL\big(p(x,z), q(x,z)\big) &= KL\big(p(z), q(z)\big) + \int p(x) KL\big(p(z|x), q(z|x)\big)dx       \tag{C.7}
+            \end{align}
+            
+            比较两个关系式，可得：
+            \begin{align}
+                KL\big(p(z), q(z)\big) + \int p(x) KL\big(p(z|x), q(z|x)\big)dx =  KL\big(p(x), q(x)\big) + \int p(z) KL\big(p(x|z), q(x|z)\big)dz      \tag{C.8}
+            \end{align}
+            
+            由于$q(x|z)$和$p(x|z)$都是markov chain的转移概率密度，均等于$r(x|z)$，所以$\int p(z) KL\big(p(x|z), q(x|z)\big)dz$等于0。于是，上式简化为：
+            \begin{align}
+                KL\big(p(x), q(x)\big) = KL\big(p(z), q(z)\big) - \int p(x) KL\big(p(z|x), q(z|x)\big)dx            \tag{C.9}
+            \end{align}
+            
+            由于KL divergence总是大于或者等于0，所以，加权和$\int p(x) KL\big(p(z|x), q(z|x)\big)dx$也是大于等于0。于是，可得：
+            \begin{align}
+                KL\big(p(x), q(x)\big) \le KL\big(p(z), q(z)\big)                   \tag{C.10}
+            \end{align}
+            
+            </br>
+            
+            上式等号成立的条件是$\int p(x) KL\big(p(z|x), q(z|x)\big)dx$等于0，这要求对不同的条件$x$，$p(z|x)$与$q(z|x)$均要相等。在大多数情况下，当$p(z)$和$q(z)$不同时，$p(z|x)$也和$q(z|x)$不同。这意味着，在大多数情况下，有
+            \begin{align}
+                KL\big(p(x), q(x)\big) < KL\big(p(z), q(z)\big)         \tag{C.11}
+            \end{align}
+            
+            </br></br>
+            <b>Corollary 2</b>
+            
+            以Total Variance(L1 distance)为度量，markov chain的转移变换是non-expanding，即
+            \begin{align}
+                \left\lVert p(x)-q(x) \right\rVert_1\ &\le\ \left\lVert p(z) - q(z) \right\rVert_1  \tag{C.12}
+            \end{align}
+            
+            其中，$p(z)$和$q(z)$是任意的概率密度函数，$r(x|z)$是markov chain的转移概率密度函数，$p(x) = \int r(x|z)p(z)dz$，$q(x) = \int r(x|z) q(z) dz$。
+            
+            证明：
+            \begin{align}
+                \left\lVert p(x)-q(x) \right\rVert_1\ &= \int \big\lvert p(x) - q(x) \big\rvert dx  \tag{C.13} \newline
+                &=  \int \left\lvert \int r(x|z) p(z) dz - \int r(x|z)q(z)dz \right\rvert dx        \tag{C.14} \newline
+                &=  \int \left\lvert \int r(x|z) \big(p(z)-q(z)\big) dz \right\rvert dx             \tag{C.15} \newline
+                &\le \int \int r(x|z) \left\lvert \big(p(z)-q(z)\big) \right\rvert dz dx	        \tag{C.16} \newline
+                &= \int \int r(x|z)dx \left\lvert \big(p(z)-q(z)\big) \right\rvert dz               \tag{C.17} \newline
+                &= \int \left\lvert \big(p(z)-q(z)\big) \right\rvert dz                             \tag{C.18} \newline
+                &= \left\lVert p(z) - q(z) \right\rVert_1                                           \tag{C.19}
+            \end{align}
+            
+            其中，式C.16应用了绝对值不等式，式C.18利用了$r(x|z)$是概率分布的性质。
+            
+            证明完毕。
+            
+            </br>
+            
+            图C.1展示了一个一维随机变量的例子，可以更直观地理解上述推导的过程。
+            
+            上述等式的成立的条件是：各个绝对值括号内的非零项均是同样的符号。如图C.1(a)，包含5个绝对值括号，每个对应一行，每个括号内有5项，当且仅当每行各个非零项同号时，上述的等式才成立。如果出现不同号的情况，则会导致$\lVert p(x)-q(x) \rVert_1\ <\ \lVert p(z) - q(z) \rVert_1$。不同号出现的数量与转移概率矩阵的非零元素有关，一般情况下，非零元素越多，不同号出现的数量会越多。
+            
+            在后验概率变换中，一般情况下，当$\alpha$越小(噪声越多)时，转移概率密度函数会有越多的非零元素，如图C.2(a)所示；当$\alpha$越大(噪声越小)时，转移概率密度函数会有越少的非零元素，如图C.2(b)所示。
+            
+            所以，有这么一个规律：<b>当$\alpha$越小时，则会导致$\lVert p(x)-q(x) \rVert_1$越小于$\lVert p(z) - q(z) \rVert_1$，也就是说，这个变换的压缩率越大</b>。
+            
+            <center> <img src="file/C1.png" width="1024" style="margin-top:12px"/> </center>
+            <center> Figure C.1: Non-expanding under L1 norm  </center>
+            </br>
+            <center> <img src="file/C2.png" width="568" style="margin-top:12px"/> </center>
+            <center> Figure C.2: More non-zero elements as $\alpha$ gets smaller </center>
+            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_non_expanding_zh")
+
+    return
+
+
+def md_stationary_zh():
+    global g_latex_del
+
+    title = "Appendix D Posterior Transform Converges to the Unique Stationary Distribution"
+    with gr.Accordion(label=title, elem_classes="first_md", elem_id="stationary"):
+        gr.Markdown(
+            r"""
+            根据文献<a href="#mc_basic_t3">[19]</a>Theorem 3的结论，<b>非周期(aperiodic)不可约(irreducible)的markov chain会收敛于惟一的稳态分布</b>。
+            
+            下面将表明，当满足一定的条件时，后验概率变换是一个非周期不可约的markov chain的转移概率密度函数。
+            
+            为了表述方便，下面以一个更通用的形式来描述扩散模型的前向变换。
+            \begin{align}
+                Z = \sqrt{\alpha}X + \sqrt{\beta}\ \epsilon     \tag{D.1} \newline
+            \end{align}
+            
+            由<a href="#transform">第1节</a>可知，$\sqrt{\alpha}X$会对$X$的概率密度函数执行缩放，所以$\alpha$控制着缩放的强度，$\beta$控制着添加噪声的大小。当$\beta = 1-\alpha$时，上述的变换与式1.1一致。
+            
+            新变换对应的后验概率分布的形式如下：
+            \begin{align}
+                q(x|z=c)  =  \operatorname{Normalize} \Big(\  \overbrace{\frac{1}{\sqrt{2\pi}\sigma}\exp{\frac{-(x-\mu)^2}{2\sigma^2}}}^{\text{GaussFun}}\ q(x)\ \Big)  \tag{D.2} \newline
+                 \text{where}\ \mu=\frac{c}{\sqrt{\alpha}}\qquad \sigma=\sqrt{\frac{\beta}{\alpha}} \qquad \text{$c$ is a fixed value}  \notag
+            \end{align}
+            
+            当$\beta = 1-\alpha$时，上述的变换与式3.4一致。
+            
+            为了表述方便，下面以$g(x)$表示式D.2中GaussFun。
+            
+            由于$\sqrt{\alpha}X$会缩放$X$的概率密度函数$q(x)$，这会使分析转移概率密度函数$q(x|z)$的非周期性和不可约性变得更复杂。所以，为了分析方便，先假设$\alpha=1$，后面再分析$\alpha \neq 1$且$\beta = 1-\alpha$的情况。
+            
+            <center> <img src="file/D1.png" width="960" style="margin-top:12px"/> </center>
+            <center> Figure D.1: Only one component in support </center>
+            
+            <center> <img src="file/D2.png" width="960" style="margin-top:12px"/> </center>
+            <center> Figure D.2: One component which can communicate with each other </center>
+             
+            </br>
+            <h3 style="font-size:24px"> $\alpha=1$ </h3>
+             
+            当$\alpha=1$时，如果$q(x)$和$\beta$满足下面两个条件之一，则$q(x|z)$对应的markov chain是非周期且不可约的。
             
             <ol style="list-style-type:decimal">
-            <li> 当$q(x)$均大于0时，后验概率变换矩阵$q(x|z)$将大于0，于是此矩阵是一个$\textcolor{red}{不可约}\textcolor{green}{非周期}$的Markov Chain的转移矩阵，根据文献<a href="#mc_basic_p6">[13]</a>的结论，此变换是一个关于Total Variance度量的压缩映射，于是，根据Banach fixed-point theorem，此变换存在惟一定点(收敛点)。</li>
-             
-            <li> 当$q(x)$部分大于0，并且$q(x)$的支撑集($q(x)$大于0的区域)只存在一个连通域时(图2)，由式(3.4)可分析出几个结论：
-            
-            <ol style="list-style-type:lower-alpha; padding-inline-start: 0px;font-size:16px;">
-            <li> 当$z$和$x$在支撑集内时，由于$q(x)$和GaussFun均大于0，所以，转移矩阵的对角元素$\{q(x|z)|z=x\}$大于0。这意味着，支撑集内的状态是$\textcolor{green}{非周期}$的。</li>
-            
-            <li> 当$z$和$x$在支撑集内时，由于GaussFun的支撑集存在一定的半径，所以，在对角元素上下附近区域内的$\{q(x|z)|x=z+\epsilon\}$也大于0。这意味着，支撑集内的状态可相互访问(accessible)，形成一个$\textcolor{red}{\text{Communication Class}}$<a href="#mc_basic_d4">[14]</a>。</li>
-                
-            <li> 当<em>$z$在支撑集内</em>且<em>$x$在支撑集外</em>时，${q(x|z)}$全为0。这意味着，支撑集内的状态<em>不可访问</em>支撑集外的状态(图2b的inaccessible区域)。</li>
-                
-            <li> 当<em>$z$在支撑集外</em>且<em>$x$在支撑集内</em>时，由于GaussFun的支撑集存在一定的范围，所以，存在部分扩展区域(图2b的extension区域)，其对应的$\{q(x|z)|x\in support\}$不全为0。这意味着，此部分扩展区域的状态可<em>单向</em>访问(access)支撑集内的状态(图2b的unidirectional区域)。</li>
-                
-            <li> 当<em>$z$在支撑集外</em>且<em>$x$在支撑集外</em>时，对应的$q(x|z)$全为0。这意味着，支撑集外的状态不会转移至支撑集外的状态，也就是说，支撑集外的状态只来源于支撑集内的状态。</li>
-            
-            <p style="margin-top:8px">
-            由(c)可知，支撑集内的状态<em>不会转移到</em>支撑集外的状态，由(a)和(b)可知，支撑集内的状态是非周期且构成一个Communicate Class，所以，支撑集内的状态独立构成一个不可约且非周期的Markov Chain，根据文献<a href="#mc_limit">[7]</a>中Theorem 11.4.1的结论，当$n\to+\infty$时，$q(x|z)^n$收敛于一个固定矩阵，并且矩阵每个列向量都相同。这意味着，对于不同的z，$q(x|z)^n$都相同(可见图2c)。另外，由(d)和(e)可知，存在部分支撑集外的z状态，能转移至支撑集内，并且会带着支撑集内的信息转移回支撑集外，于是，此部分z状态对应的$q(x|z)$(图2c的$q(x|z_{ex})$区域)也会等于支撑集内对应的$q(x|z)$(图2c的$q(x|z_{sup})$区域)。
-            </p>
-            
-            <p style="margin-top:8px">
-            所以，可以得出结论，当状态限制在支撑集和两个扩展区域内时，$\lim_{n\to\infty}{q(x|z)^n}$会收敛于一个固定矩阵，并且每个列向量均相同。于是，对于任意的输入分布，如果连续应用足够多后验概率变换，最终会收敛于一个固定分布，此分布等于收敛的矩阵的列向量。根据文献<a href="#fp_converse">[9]</a>的结论，当迭代变换收敛于惟一定点时，此变换是关于某个metric的Contraction Mapping。
-            </p>
-
+            <li>如果$q(x)$的支撑集只存在一个connected component。</li>
+            <li>如果$q(x)$的支撑集存在多个connected component，但各个connected component之间的距离小于$3$倍$\sigma$。也就是说，间隙能被$g(x)$的有效区域的半径所覆盖。</li>
             </ol>
+            
+            证明如下：
+            
+            <ol style="list-style-type:decimal">
+            <li>
+            对$q(x)$支撑集内的任意点$c$，当$z=c$和$x=c$时，$q(x=c)>0$；由式D.2可知，$g(x)$的中心位于$c$，所以$g(x)$在$x=c$处也大于0。于是，根据式D.2中相乘的关系可知，$q(x=c|z=c)>0$。因此，$q(x|z)$对应的markov chain是非周期的。 
+            
+            对$q(x)$支撑集内的任意点$c$，当$z=c$时，$g(x)$的中心位于$c$, 所以存在一个以$c$为中心的超球($\lVert x-c\rVert_2 < \delta$)，在此超球内，$q(x|z=c)>0$，也就是说，状态$c$可以访问(access)附近的其它状态。由于支撑集内每个状态都具有此性质，所以，整个支撑集内的状态构成一个$\textcolor{red}{\text{Communicate Class}}$<a href="#mc_basic_d4">[14]</a>。因此，$q(x|z)$对应的markov chain是不可约的。
+            
+            所以，满足条件1的markov chain是非周期和不可约的。可看图D.1的例子，其展示了单个connected component的例子。
             </li>
             
-            <li> 当$q(x)$部分大于0，$q(x)$的支撑集存在多个连通域，并且各个连通域的最大距离<b>能</b>被相应的GaussFun的支撑集所覆盖时，那各个连通域内的状态构成一个Communicate Class。如图3所示，$q(x)$存在两个连通域，在第一个连通域的边缘，$q(x|z=-0.3)$对应的GaussFun的支撑集能跨越间隙到达第二个连通域，于是第一个连通域的状态能<em>访问</em>第二个连通域的状态；在第二个连通域的边缘，$q(x|z=0)$对应的GaussFun的支撑集也能跨越间隙到达第一个连通域，于是第二个连通域的状态能<em>访问</em>第一个连通域的状态，所以两个连通域构成一个Communicate Class。因此，与单个连通域的情况类似，当状态限制在各个连通域、间隙及扩展区域内时，后验概率变换存在惟一一个迭代收敛点，并且是关于某个metric的压缩映射。</li>
+            <li>
+            当$q(x)$支撑集存在多个connected component时，markov chain可能存在多个communicate class。但当各间隙小于$g(x)$的3倍标准差时，那各个component的状态的将可互相访问(access)，因此，$q(x|z)$对应的markov chain也只存在一个communicate class，与条件1的情况相同。所以，满足条件2的markov chain是非周期和不可约的。
             
-            <li> 当$q(x)$部分大于0，$q(x)$的支撑集存在多个连通域时，并且各个连通域的最大距离<b>不能</b>被相应的GaussFun的支撑集所覆盖时，那各个连通域内的状态构成多个Communicate Class，如图4所示。此情况下，当$n\to\infty$时，$q(x|z)^n$也会收敛于一个固定矩阵，但每个列向量不尽相同。所以，后验概率变换不是一个严格的压缩映射。但当输入分布的状态限制在单个Communicate Class及相应的扩展范围内时，后验概率变换也是一个压缩映射，存在惟一收敛点。</li>
+            可看图d2的例子，其展示了多个connected component的例子。
+            </li>
             </ol>
             
-            <center> <img src="file/fig3.png" width="960" style="margin-top:12px"/> </center>
-            <center> Figure 3: Two component which can communicate with each other </center>
+            <center> <img src="file/D3.png" width="960" style="margin-top:12px"/> </center>
+            <center> Figure D.3: Two component which <b>cannot</b> communicate with each other </center>
             
-            <center> <img src="file/fig4.png" width="960" style="margin-top:12px"/> </center>
-            <center> Figure 4: Two component which <b>cannot</b> communicate with each other </center>
+            </br>
+            <h3 style="font-size:24px"> $\alpha \neq 1$ </h3>
             
-            另外，后验概率变换存在一个更通用的关系，与$q(x|z)$的具体值无关: 两个输出分布的之间的Total Variance距离总是会<b>小于等于</b>对应输入分布之间的Total Variance距离，即
+            当$\alpha \neq 1$时，对$q(x)$支撑集内的任意点$c$，由式D.2可知，$g(x)$的中心不再是$c$，而是$\frac{c}{\sqrt{\alpha}}$。也就是说$g(x)$的中心会偏离$c$，偏离的距离为$\lVert c\rVert(\frac{1-\sqrt{\alpha}}{\sqrt{\alpha}})$。可以看出，$\lVert c\rVert$越大，偏离越多。具体可看图D.4(c)和图D.4(d)的例子，在图D.4(d)中，当$z=2.0$，$g(x)$的中心明显偏离$x=2.0$。本文将此现象称之为<b>中心偏离现象</b>。
+            
+            <b>中心偏离现象</b>将会影响markov chain一些状态的性质。
+            
+            当偏离的距离明显大于$3\sigma$时，$g(x)$在$x=c$及其附近<b>可能均为零</b>，于是，$q(x=c|z=c)$将<b>可能等于0</b>，并且在$x=c$附近$q(x|z=c)$<b>也可能等于0</b>。所以，状态$c$不一定可访问附近的状态。这一点与$\alpha=1$的情况不同。具体可图D.5的例子，$\textcolor{green}{\text{绿色曲线}}$是$z=6.0$的$g(x)$，$\textcolor{orange}{\text{黄线曲线}}$是$q(x|z=6.0)$，由于$g(x)$的中心偏离$x=6.0$太多，导致$q(x=6.0|z=6.0)=0$。
+            
+            当偏离的距离明显小于$3\sigma$时，$g(x)$在$x=c$及其附近<b>均不为零</b>，于是，$q(x=c|z=c)$将<b>不等于0</b>，并且在$x=c$附近$q(x|z=c)$<b>也不等于0</b>。所以，状态$c$可访问附近的状态，并且是非周期的。
+            
+            当$c$满足什么要求时，$g(x)$中心的偏离距离会小于$3\sigma$呢？
             \begin{align}
-                dist(q_{o1}(x),\ q_{o2}(x)) \le dist(q_{i1}(z),\ q_{i2}(z))    \tag{B.1}
+                \lVert c\rVert(\frac{1-\sqrt{\alpha}}{\sqrt{\alpha}})\ <\  3\frac{\sqrt{\beta}}{\sqrt{\alpha}} \qquad \Rightarrow \qquad \lVert c\rVert \ <\ 3\frac{\sqrt{\beta}}{1-\sqrt{\alpha}}      \tag{D.3} \newline
             \end{align}
-            下面通过离散的形式给出证明：
-            \begin{align}
-                      \lVert q_{o1}-q_{o2}\rVert_{TV} &= \lVert Q_{x|z}q_{i1} - Q_{x|z}q_{i2}\rVert_{TV}                                                                                                                    \tag{B.2}         \newline
-                                                      &=   \sum_{m}\textcolor{red}{|}\sum_{n}Q_{x|z}(m,n)q_{i1}(n) - \sum_{n}Q_{x|z}(m,n)q_{i2}(n)\textcolor{red}{|}                                                        \tag{B.3}         \newline
-                                                      &=   \sum_{m}\textcolor{red}{|}\sum_{n}Q_{x|z}(m,n)(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}                                                                          \tag{B.4}         \newline
-                                                      &\leq \sum_{m}\sum_{n}Q_{x|z}(m,n)\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}             \qquad \qquad \qquad \text{Absolute value inequality}       \tag{B.5}         \newline
-                                                      &=   \sum_{n}\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|} \sum_{m} Q_{x|z}(m,n)            \qquad \qquad \qquad \sum_{m} Q_{x|z}(m,n) = 1              \tag{B.6}         \newline
-                                                      &=   \sum_{n}\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}                                                                                              \tag{B.7}
-            \end{align}
-            其中，$Q_{x|z}(m,n)$表示矩阵$Q_{x|z}$的第m行第n列的元素，$q_{i1}(n)$表示向量$q_{i1}$的第n个元素。
             
-            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_proof_ctr_zh")
+            由上可知，存在一个上限，只要$\lVert c\rVert$小于这个上限，可保证偏离量小于$3\sigma$。
+            
+            当$\beta=1-\alpha$时，上式变为
+            \begin{align}
+                \lVert c\rVert \ <\ 3\frac{\sqrt{1-\alpha}}{1-\sqrt{\alpha}}    \tag{D.4} \newline
+            \end{align}
+            
+            $3\frac{\sqrt{1-\alpha}}{1-\sqrt{\alpha}}$与$\alpha$有着严格的单调递减的关系。
+            
+            当$\alpha \in (0, 1)$时，
+            \begin{align}
+                3\frac{\sqrt{1-\alpha}}{1-\sqrt{\alpha}} > 3        \tag{D.5} \newline
+            \end{align}
+            
+            根据上面的分析，可总结出以下的结论：
+            
+            <ol style="list-style-type:decimal">
+            <li>
+            <b>如果$q(x)$的支撑集只存在一个connected component，并且支撑集的点离原点的距离均小于$ 3\frac{\sqrt{1-\alpha}}{1-\sqrt{\alpha}}$，那么$q(x|z)$对应的markov chain是非周期和不可约的。</b>
+            </li>
+            
+            <li>
+            如果$q(x)$的支撑集存在多个connected component，由于$g(x)$的中心偏离效应，准确判断两个component之间是否可以互相访问变得更加复杂，这里不再详细分析。但下面给出一个保守的结论：<b>如果支撑集的点离原点的距离均小于$1$，并且各个connected component之间的间隙均小于$2\sigma$，那么$q(x|z)$对应的markov chain是非周期和不可约的。</b>
+            </li>
+            </ol>
+            
+            <center> <img src="file/D4.png" width="1280" style="margin-top:12px"/> </center>
+            <center> Figure D.4: Center Deviation of the GaussFun </center>
+            </br>
+            <center> <img src="file/D5.png" width="568" style="margin-top:12px"/> </center>
+            <center> Figure D.5: Deviation is More Than $3\sigma$ </center>
+            
+            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_stationary_zh")
+
     return
 
 
@@ -553,6 +780,16 @@ def md_reference_zh():
             
             <a id="dsm" href="https://www.iro.umontreal.ca/~vincentp/Publications/smdae_techreport_1358_v1.pdf"> [18] A Connection Between Score Matching and Denoising autoencoders </a>
             
+            <a id="mc_basic_t3" href="http://galton.uchicago.edu/~lalley/Courses/312/MarkovChains.pdf"> [19] Markov Chain:Basic Theory - Theorem 3 </a>
+            
+            <a id="mc_mt_lambda" href="https://pages.uoregon.edu/dlevin/MARKOV/markovmixing.pdf"> [20] Markov Chains and Mixing Times, second edition - 12.2 The Relaxation Time </a>
+            
+            <a id="non_neg_lambda" href="https://link.springer.com/book/10.1007/0-387-32792-4"> [21] Non-negative Matrices and Markov Chains - Theorem 2.10 </a>
+            
+            <a id="prml_mcmc" href="https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf"> [22] Pattern Recognition and Machine Learning - 11.2. Markov Chain Monte Carlo </a>
+            
+            <a id="elem" href="https://cs-114.org/wp-content/uploads/2015/01/Elements_of_Information_Theory_Elements.pdf"> [23] Elements_of_Information_Theory_Elements - 2.9 The Second Law of Thermodynamics </a>
+             
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_reference_zh")
 
     return
@@ -599,7 +836,11 @@ def run_app():
         
         md_cond_kl_zh()
         
-        md_proof_ctr_zh()
+        md_approx_gauss_zh()
+    
+        md_non_expanding_zh()
+    
+        md_stationary_zh()
 
         md_reference_zh()
          

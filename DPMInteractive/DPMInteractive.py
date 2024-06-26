@@ -697,15 +697,15 @@ def contraction_init_change(seed, alpha, two_inputs_seed):
     x_pdf = hijack(seed, x, x_pdf)
     
     # test
-    x_pdf[x_pdf < 0.01] = 0
+    # x_pdf[x_pdf < 0.01] = 0
     
     x_pdf = x_pdf / (x_pdf * g_res).sum()  # normalized to 1
     fig = plot_pdf(x, x_pdf, title="input variable pdf", titlesize=9)
     
     info = contraction_alpha_change(x, x_pdf, alpha, two_inputs_seed)
-    fig_xcz, fig_z, z, xcz_pdf, fig_inp_out = info
+    fig_xcz, fig_z, z, xcz_pdf, fig_inp_out, lambda_2 = info
     
-    return fig, x, x_pdf, fig_xcz, fig_z, z, xcz_pdf, fig_inp_out
+    return fig, x, x_pdf, fig_xcz, fig_z, z, xcz_pdf, fig_inp_out, lambda_2
 
 
 def contraction_alpha_change(x, x_pdf, alpha, two_inputs_seed):
@@ -721,9 +721,14 @@ def contraction_alpha_change(x, x_pdf, alpha, two_inputs_seed):
     fig_xcz = plot_2d_pdf(x, z, xcz_pdf, None, label="$q(x|z)$",
                           title=xcz_title, titlesize=9, xlabel="z domain(cond)", ylabel="x domain")
 
+    xcz = xcz_pdf/xcz_pdf.sum(axis=0, keepdims=True)
+    evals = np.linalg.eigvals(xcz)
+    evals = sorted(np.absolute(evals), reverse=True)
+    lambda_2 = evals[1]
+    
     fig_inp_out = contraction_apply(x, x_pdf, xcz_pdf, two_inputs_seed)
 
-    return fig_xcz, fig_z, z, xcz_pdf, fig_inp_out
+    return fig_xcz, fig_z, z, xcz_pdf, fig_inp_out, lambda_2
 
 
 def change_two_inputs_seed():

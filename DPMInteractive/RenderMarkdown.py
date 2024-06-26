@@ -3,13 +3,13 @@ import gradio as gr
 
 from RenderMarkdownZh import md_introduction_zh, md_transform_zh, md_likelihood_zh, md_posterior_zh
 from RenderMarkdownZh import md_forward_process_zh, md_backward_process_zh, md_fit_posterior_zh
-from RenderMarkdownZh import md_posterior_transform_zh, md_deconvolution_zh, md_cond_kl_zh, md_proof_ctr_zh
-from RenderMarkdownZh import md_reference_zh, md_about_zh
+from RenderMarkdownZh import md_posterior_transform_zh, md_deconvolution_zh, md_cond_kl_zh, md_approx_gauss_zh
+from RenderMarkdownZh import md_non_expanding_zh, md_stationary_zh, md_reference_zh, md_about_zh
 
 from RenderMarkdownEn import md_introduction_en, md_transform_en, md_likelihood_en, md_posterior_en
 from RenderMarkdownEn import md_forward_process_en, md_backward_process_en, md_fit_posterior_en
-from RenderMarkdownEn import md_posterior_transform_en, md_deconvolution_en, md_cond_kl_en, md_proof_ctr_en
-from RenderMarkdownEn import md_reference_en, md_about_en
+from RenderMarkdownEn import md_posterior_transform_en, md_deconvolution_en, md_cond_kl_en, md_approx_gauss_en
+from RenderMarkdownEn import md_non_expanding_en, md_stationary_en, md_reference_en, md_about_en
 
 
 def md_introduction_block(md_type="offline"):
@@ -137,14 +137,40 @@ def md_cond_kl_block(md_type="offline"):
     return
 
 
-def md_proof_ctr_block(md_type="offline"):
+def md_approx_gauss_block(md_type="offline"):
     if md_type == "offline":
-        title = "Appendix B Proof of Contraction"
-        gr.Accordion(label=title, elem_classes="first_md", elem_id="proof_ctr")
+        title = "Appendix B When does the Posterior Approximate to Gaussian ?"
+        gr.Accordion(label=title, elem_classes="first_md", elem_id="approx_gauss")
     elif md_type == "zh":
-        md_proof_ctr_zh()
+        md_approx_gauss_zh()
     elif md_type == "en":
-        md_proof_ctr_en()
+        md_approx_gauss_en()
+    else:
+        raise NotImplementedError
+    return
+
+
+def md_non_expanding_block(md_type="offline"):
+    if md_type == "offline":
+        title = "Appendix C Posterior Transform is a Non-expanding Mapping"
+        gr.Accordion(label=title, elem_classes="first_md", elem_id="non_expanding")
+    elif md_type == "zh":
+        md_non_expanding_zh()
+    elif md_type == "en":
+        md_non_expanding_en()
+    else:
+        raise NotImplementedError
+    return
+
+
+def md_stationary_block(md_type="offline"):
+    if md_type == "offline":
+        title = "Appendix D Posterior Transform Converges to the Unique Stationary Distribution"
+        gr.Accordion(label=title, elem_classes="first_md", elem_id="stationary")
+    elif md_type == "zh":
+        md_stationary_zh()
+    elif md_type == "en":
+        md_stationary_en()
     else:
         raise NotImplementedError
     return

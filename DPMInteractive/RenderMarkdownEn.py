@@ -82,15 +82,21 @@ def md_posterior_en():
                 q(x|z) = \frac{q(z|x)q(x)}{q(z)}    \tag{3.1}
             \end{align}
 
-            When $z$ takes a fixed value, $q(z)$ is a constant, so the shape of $q(x|z)$ is only related to ${q(z|x)q(x)}$.
+            When $z$ is fixed, $q(z)$ is a constant, so $q(x|z)$ is a probability density function with respect to $x$, and its shape depends only on $q(z|x)q(x)$. 
             \begin{align}
                 q(x|z)  \propto q(z|x)q(x) 	\qquad where\ z\ is\ fixed  \tag{3.2}
             \end{align}
             
+            In fact, $q(z)=\int q(z|x)q(x)dx$, which means that $q(z)$ is the sum over $x$ of the function $q(z|x)q(x)$. Therefore, dividing $q(z|x)q(x)$ by $q(z)$ is equivalent to normalizing $q(z|x)q(x)$. 
+            \begin{align}
+                q(x|z) = \operatorname{Normalize}\big(q(z|x)q(x)\big)  \tag{3.3}
+            \end{align}
+            
             From Equation 2.1, we can see that $q(z|x)$ is a Gaussian distribution, so we have
             \begin{align}
-                q(x|z)  &\propto \frac{1}{\sqrt{2\pi(1-\alpha)}}\exp{\frac{-(z-\sqrt{\alpha}x)^2}{2(1-\alpha)}}\ q(x)& 	\qquad &where\ z\ is\ fixed      \tag{3.3}   \newline
-                        &=	\frac{1}{\sqrt{\alpha}} \underbrace{\frac{1}{\sqrt{2\pi}\sigma}\exp{\frac{-(x-\mu)^2}{2\sigma^2}}}_{\text{GaussFun}}\ q(x)& \qquad &where\ \mu=\frac{z}{\sqrt{\alpha}}\quad \sigma=\sqrt{\frac{1-\alpha}{\alpha}}   \tag{3.4}
+                q(x|z)  &\propto \frac{1}{\sqrt{2\pi(1-\alpha)}}\exp{\frac{-(z-\sqrt{\alpha}x)^2}{2(1-\alpha)}}\ q(x)& 	\qquad &\text{where z is fixed}     \notag   \newline
+                        &= \frac{1}{\sqrt{\alpha}}\frac{1}{\sqrt{2\pi\frac{1-\alpha}{\alpha}}}\exp{\frac{-(\frac{z}{\sqrt{\alpha}}-x)^2}{2\frac{1-\alpha}{\alpha}}}\ q(x)& 	     \notag     \newline
+                        &= \frac{1}{\sqrt{\alpha}} \underbrace{\frac{1}{\sqrt{2\pi}\sigma}\exp{\frac{-(x-\mu)^2}{2\sigma^2}}}_{\text{GaussFun}}\ q(x)& \qquad &\text{where}\ \mu=\frac{z}{\sqrt{\alpha}}\quad \sigma=\sqrt{\frac{1-\alpha}{\alpha}}   \tag{3.4}
             \end{align}
             
             It can be observed that the <b>GaussFun</b> part is a Gaussian function of $x$, with a mean of $\frac{z}{\sqrt{\alpha}}$ and a variance of $\sqrt{\frac{1-\alpha}{\alpha}}$, so the shape of $q(x|z)$ is determined by **the product of GaussFun and q(x)**.
@@ -98,19 +104,27 @@ def md_posterior_en():
             According to the characteristics of <em>multiplication</em>, the characteristics of the shape of the $q(x|z)$ function can be summarized. 
             
             <ul>
-            <li>When the variance of the Gaussian function is small (small noise), or when $q(x)$ changes slowly, the shape of $q(x|z)$ will approximate to the Gaussian function, and have a simpler function form, which is convenient for modeling and learning.</li>
+            <li>The support set of $q(x|z)$ should be contained within the support set of GaussFun. The support set of GaussFun is a hypersphere, centered at the mean $\mu$ with a radius of approximately 3 times the standard deviation $\sigma$. </li>
+            
+            <li>When the variance of the Gaussian function is small (small noise), or when $q(x)$ changes linearly, the shape of $q(x|z)$ will approximate to the Gaussian function, and have a simpler function form, which is convenient for modeling and learning.</li>
              
             <li>When the variance of the Gaussian function is large (large noise), or when $q(x)$ changes drastically, the shape of $q(x|z)$ will be more complex, and greatly differ from a Gaussian function, which makes it difficult to model and learn.</li>
             </ul>
+            
+            <a href="#approx_gauss">Appendix B</a> provides a more rigorous analysis. When $\sigma$ satisfies certain conditions, $q(x|z)$ approximates to Gaussiani distribution.
             
             The specifics can be seen in <a href="#demo_2">Demo 2</a>. The fourth figure present the shape of the posterior $q(x|z)$, which shows an irregular shape and resembles a curved and uneven line. As $\alpha$ increases (noise decreases), the curve tends to be uniform and straight. Readers can adjust different $\alpha$ values and observe the relationship between the shape of posterior and the level of noise. In the last figure, the $\textcolor{blue}{\text{blue dash line}}$ represents $q(x)$, the $\textcolor{green}{\text{green dash line}}$ represents <b>GaussFun</b> in the equation 3.4, and the $\textcolor{orange}{\text{orange curve}}$ represents the result of multiplying the two function and normalizing it, which is the posterior probability $q(x|z=fixed)$ under a fixed z condition. Readers can adjust different values of z to observe how the fluctuation of $q(x)$ affect the shape of the posterior probability $q(x|z)$.
             
             The posterior $q(x|z)$ under two special states are worth considering.
             <ul>
-            <li>As $\alpha \to 0$, the variance of <b>GaussFun</b> tends to <b>$\infty$</b>, and $q(x|z)$ for different $z$ almost become identical, and almost the same as $q(x)$. Readers can set $\alpha$ to 0.001 in <a href="#demo_2">Demo 2</a> to observe the specific results.</li>
+            <li>As $\alpha \to 0$, the variance of <b>GaussFun</b> tends to <b>$\infty$</b>, and GaussFun almost becomes a uniform distribution over a very large support set, and the result of multiplying $q(x)$ by the uniform distribution is still $q(x)$, therefore, $q(x|z)$ for different $z$ almost become identical, and almost the same as $q(x)$. Readers can set $\alpha$ to 0.001 in <a href="#demo_2">Demo 2</a> to observe the specific results.</li>
                 
             <li>As $\alpha \to 1$, the variance of <b>GaussFun</b> tends to <b>$0$</b>, The $q(x|z)$ for different $z$ values contract into a series of <em>Dirac delta functions</em> with different offsets equalling to $z$. However, there are some exceptions. When there are regions where $q(x)$ is zero, the corresponding $q(x|z)$ will no longer be a Dirac <em>delta function</em>, but a zero function. Readers can set $\alpha$ to 0.999 in <a href="#demo_2">Demo 2</a> to observe the specific results.</li>
             </ul>
+            
+            There is one point to note. when $\alpha \to 0$, the mean of GaussFun corresponding for larger $z$ values($\mu = \frac{z}{\sqrt{\alpha}}$) also increases sharply. This means that GaussFun is located farther from the support of $q(x)$. In this case, the "uniformity" of the part of GaussFun corresponding to the support of $q(x)$ will slightly decrease, thereby slightly reducing the similarity between $q(x|z)$ and $q(x)$. However, this effect will further diminish as $\alpha$ decreases. Readers can observe this effect in <a href="#demo_2">Demo 2</a>. Set $\alpha$ to 0.001, and you will see a slight difference between $q(x|z=-2)$ and $q(x)$, but no noticeable difference between $q(x|z=0)$ and $q(x)$.
+            
+            Regarding the "uniformity" of the Gaussian function, there are two characteristics: the larger the standard deviation, the greater the uniformity; the farther away from the mean, the smaller the uniformity.
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_posterior_en")
     return
 
@@ -153,18 +167,22 @@ def md_forward_process_en():
                 q(z_t|x) &= \mathcal{N}(\sqrt{\alpha_1\alpha_2\cdots\alpha_t}x,\ 1-\alpha_1\alpha_2\cdots\alpha_t) = \mathcal{N}(\sqrt{\bar{\alpha_t}}x,\ 1-\bar{\alpha_t})  \qquad where\ \bar{\alpha_t} \triangleq \prod_{j=1}^t\alpha_j      \tag{4.8}
             \end{align}
             
-            Comparing the forms of Equation 4.8 and Equation 2.1, it can be found that their forms are completely consistent. If only focusing on the final transformed distribution $q(z_t)$, then the t consective small transformations can be replaced by one large transformation. The $\alpha$ of the large transformation is the accumulation of the $\alpha$ from each small transformation.
+            Comparing the forms of Equation 4.8 and Equation 2.1, it can be found that their forms are completely consistent. 
             
+            If we only focus on the relationship between the initial and final random variables, then a sequence of t small transforms can be replaced by one large transform, and the $\alpha$ of the large transform is the accumulation of the $\alpha$ from each small transform, because the joint probability distributions corresponding to both types of transforms are the same.
+            
+            Readers can perform an experiment in <a href="#demo_3_1">Demo 3.1</a> using the same input distribution $q(x)$ but with two different transform methods: 1) using three transformations, each with $\alpha$ equal to 0.95; 2) using a single transform with $\alpha$ set to 0.857375. Perform the transformations separately and then compare the two resulting distributions. You will see that the two distributions are identical.
+             
             In the DDPM[\[2\]](#ddpm) paper, the authors used 1000 steps (T=1000) to transform the data distribution $q(x)$ to $q(z_T)$. The probability distribution of $q(z_T|x)$ is as follows:
             \begin{align}
                 q(z_T|x) &= \mathcal{N}(0.00635\ x,\ 0.99998)    \tag{4.9}
             \end{align}
             
-            If considering only marginal distribution $q(z_T)$, a single transformation can also be used, which is as follows:
+            If only considering the joint distribution $q(x, z_T)$, a single transformation can also be used as a substitute, which is as follows:
             \begin{align}
                 Z_T = \sqrt{0.0000403}\ X + \sqrt{1-0.0000403}\ \epsilon = 0.00635\ X + 0.99998\ \epsilon 			 \tag{4.10}
             \end{align}
-            It can be seen that, after applying two transforms, the transformed distributions $q(z_T|x)$ are the same. Thus, $q(z_T)$ is also the same. 
+            It can be seen that, after applying two transforms, the transformed distributions $q(z_T|x)$ are the same. Thus, $q(x,z_T)$ is also the same. 
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_forward_process_en")
     return
 
@@ -193,7 +211,7 @@ def md_backward_process_en():
             In <a href="#posterior">Section 3</a>, we have considered two special posterior probability distributions. Next, we analyze their corresponding <em>posterior transforms</em>.
             <ul>
                 <li> When $\alpha \to 0$, the $q(x|z)$ for different $z$ are almost the same as $q(x)$. In other words, the basis functions of linear weighted sum are almost the same. In this state, no matter how the input changes, the output of the transformation is always $q(x)$.</li>
-                <li> When $\alpha \to 1$, the $q(x|z)$ for different $z$ values becomes a series of Dirac delta functions and zero functions. In this state, as long as the <em>support set</em> of the input distribution is included in the <em>support set</em> of $q(x)$, the output of the transformation will remain the same with the input.</li>
+                <li> When $\alpha \to 1$, the $q(x|z)$ for different $z$ values becomes a series of Dirac delta functions and zero functions. In this state, as long as the <em>support</em> of the input distribution is included in the <em>support set</em> of $q(x)$, the output of the transformation will remain the same with the input.</li>
             </ul>
             
             In <a href="#forward_process">Section 4</a>, it is mentioned that the 1000 transformations used in the DDPM[\[2\]](#ddpm) can be represented using a single transformation
@@ -201,11 +219,13 @@ def md_backward_process_en():
                 Z_T = \sqrt{0.0000403}\ X + \sqrt{1-0.0000403}\ \epsilon = 0.00635\ X + 0.99998\ \epsilon 			 \tag{5.5}
             \end{align}
             
-            Since $\\alpha=0.0000403$ is very small, the corresponding standard deviation of GaussFun (Equation 3.4) reaches 157.52. However, the range of $X$ is limited within $[-1, 1]$, which is far smaller than the standard deviation of GaussFun. Within the range of $x \\in [-1, 1]$, GaussFun should be close to a constant, showing little variation. Therefore, the $q(x|z_T)$ corresponding to different $z_T$ are almost the same as $q(x)$. In this state, the posterior transform corresponding to $q(x|z_T)$ does not depend on the input distribution, the output distribution will always be $q(x)$.
+            Since $\alpha=0.0000403$ is very small, the corresponding standard deviation of GaussFun (Equation 3.4) reaches 157.52. If we constrain the support of $q(x)$ within the unit hypersphere ($\lVert x \rVert_2 < 1$), then for $z_T$ in the range $[-2, +2]$, each corresponding $q(x|z_T)$ is very similar to $q(x)$. In this state, for the posterior transform of $q(x|z_T)$, regardless of the shape of the input distribution, as long as the support set is within the range $[-2,+2]$, the output distribution will be $q(x)$.
             
-            <b>Therefore, theoretically, in the DDPM model, it is not necessary to use the standard normal distribution to replace $q(z_T)$. Any other arbitrary distributions can also be used as a substitute.</b>
+            <b>Furthermore, we can conclude that in the DPM model, if the support of $q(x)$ is finite and the signal-to-noise ratio of the final variable $Z_T$ is sufficiently high, the process of restoring $q(x)$ can use any distribution; it doesn't necessarily have to use the standard normal distribution.</b>
             
             Readers can conduct a similar experiment themselves. In <a href="#demo_3_1">Demo 3.1</a>, set <em>start_alpha</em> to 0.25, <em>end_alpha</em> to 0.25, and <em>step</em> to 7. At this point, $q(z_7)=\sqrt{0.000061}X + \sqrt{1-0.000061} \epsilon$, which is roughly equivalent to DDPM's $q(z_T)$. Click on <b>apply</b> to perform the forward transform (plotted using $\textcolor{blue}{\text{blue curves}}$), which prepares for the subsequent restoring process. In <a href="#demo_3_2">Demo 3.2</a>, set the <em>noise_ratio</em> to 1, introducing 100% noise into the <em>tail distribution</em> $q(z_7)$. Changing the value of <em>nose_random_seed</em> will change the distribution of noise. Deselect <em>backward_pdf</em> to reduce screen clutter. Click on <b>apply</b> to restore $q(x)$ through posterior transform. You will see that, no matter what the shape of input $q(z_7)$ may be, the restored $q(x)$ is always exactly the same as the original $q(x)$. The JS Divergence is zero. The restoration process is plotted using a $\textcolor{red}{\text{red curve}}$.
+            
+            There is another point worth noting. In deep learning tasks, it is common to scale each dimension of the input within the range [-1, 1], which means within a unit hypercube. The maximum Euclidean distance between any two points in a unit hypercube increases with the dimensionality. For example, in one dimension, the maximum distance is $2$, two dimensions is $2\sqrt{2}$, three dimensions is $2\sqrt{3}$, and n dimensions is $2\sqrt{n}$. Therefore, for data with higher dimensions, the variable $Z_T$ needs a higher signal-to-noise ratio to allow the starting distribution of the recovery process to accept any distribution.
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_backward_process_en")
     return
 
@@ -296,15 +316,17 @@ def md_posterior_transform_en():
 
         gr.Markdown(
             r"""
-            <h3 style="font-size:18px"> Contraction Mapping and Converging Point </h3>
+            </br>
+            <h3 style="font-size:18px"> Non-expanding Mapping and Stationary Distribution </h3>
             \begin{align}
                 q(x) &= \int q(x,z) dz = \int q(x|z)q(z)dz      \tag{7.1}
             \end{align}
-            
-            Through extensive experiments with one-dimensional random variables, it was found that the <b>Posterior Transform</b> exhibits the characteristics of <b>Contraction Mapping</b>. This means that, for any two probability distributions $q_{i1}(z)$ and $q_{i2}(z)$, after posterior transform, we get $q_{o1}(x)$ and $q_{o2}(x)$. The distance between $q_{o1}(x)$ and $q_{o2}(x)$ is always less than the distance between $q_{i1}(x)$ and $q_{i2}(x)$. Here, the distance can be measured using JS divergence or Total Variance. Furthermore, the contractive ratio of this contraction mapping is positively related to the size of the added noise.
+
+            According to Corollary 1 and Corollary 2 in <a href="#non_expanping">Appendix B</a>, the posterior transform is a <b>non-expanding mapping</b>. This means that for any two probability distributions $q_{i1}(z)$ and $q_{i2}(z)$, after the posterior transform, the resulting distributions $q_{o1}(x)$ and $q_{o2}(x)$ will have a distance that is <b>always less than or equal to</b> the distance between $q_{i1}(x)$ and $q_{i2}(x)$. The distance here can be measured using KL Divergence or Total Variance.
             \begin{align}
-                dist(q_{o1}(z),\ q_{o2}(z)) < dist(q_{i1}(x),\ q_{i2}(x))                   \tag{7.2}
+                d(q_{o1}(z),\ q_{o2}(z)) \le d(q_{i1}(x),\ q_{i2}(x))                   \tag{7.2}
             \end{align}
+            According to the analysis in <a href="#non_expanping">Appendix B</a>, the aforementioned equality does not hold in most cases and posterior transform becomes a <b>shrinkig mapping</b>. Furthermore, <b>the smaller $\alpha$ is (the more noise), the smaller $d(q_{o1},q_{o2})$ will be compared to $d(q_{i1},q_{i2})$</b>.
     
             Readers can refer to <a href="#demo_4_1">Demo 4.1</a>, where the first three figure present a transform process. The first figure is an arbitrary data distribution $q(x)$, the third figure is the transformed probability distribution, and second figure is the posterior probability distribution $q(x|z)$. You can change the random seed to generate a new data distribution$q(x)$, and adjust the value of $\alpha$ to introduce different degrees of noise.
 
@@ -312,7 +334,7 @@ def md_posterior_transform_en():
             
             Readers can change the input random seed to toggle different inputs. It can be observed from the figures that $div_{in}$ is always smaller than $div_{out}$ for any input. Additionally, if you change the value of $\alpha$, you will see that the smaller the $\alpha$(larger noise), the smaller the ratio of $div_{out}/div_{in}$，indicating a larger rate of contraction.
             
-            According to the Banach fixed-point theorem<a href="#fixed_point">[5]</a>, a contraction mapping has a unique fixed point (converged point). That is to say, for any input distribution, the <b>Posterior Transform</b> can be applied continuously through iterations, and as long as the number of iterations is sufficient, the final output would be the same distribution. After a large number of one-dimensional random variable experiments, it was found that the fixed point (converged point) is <b>located near $q(x)$</b>. Also, the location is related to the value of $\alpha$; the smaller $\alpha$ (larger noise), the closer it is. 
+            According to the analysis in <a href="#stationary">Appendix C</a>: the posterior transform can be seen as a one-step jump of a Markov chain, and <b>when $q(x)$ and $\alpha$ meet certain conditions, this Markov chain will converge to a unique stationary distribution</b>. Additionally, numerous experiments have shown that <b>the stationary distribution is very similar to the data distribution $q(x)$, and the smaller $\alpha$ is, the more similar the stationary distribution is to $q(x)$</b>. Specifically, according to the conclusion in <a href="#backward_process">Section 5</a>, <b>when $\alpha \to 0$, after one step of transform, the output distribution will be $q(x)$, so the stationary distribution must be $q(x)$</b>.
             
             Readers can refer to <a href="#demo_4_2">Demo 4.2</a>, which illustrates an example of applying posterior transform iteratively. Choose an appropriate number of iterations, and click on the button of <em>Apply</em>, and the iteration process will be draw step by step. Each subplot shows the transformed output distribution($\textcolor{green}{\text{green curve}}$) from each transform, with the reference distribution $q(x)$ expressed as a $\textcolor{blue}{\text{blue curve}}$, as well as the distance $div$ between the output distribution and $q(x)$. It can be seen that as the number of iterations increases, the output distribution becomes more and more similar to $q(x)$, and will eventually stabilize near $q(x)$. For more complicated distributions, more iterations or greater noise may be required. The maximum number of iterations can be set to tens of thousands, but it'll take longer.
             
@@ -325,23 +347,34 @@ def md_posterior_transform_en():
             \end{align}
             In order to better understand the property of the transform, the matrix $(Q_{x|z})^n$ is also plotted in <a href="#demo_4_2">Demo 4.2</a>. From the demo we can see that, as the iterations converge, the row vectors of the matrix $(Q_{x|z})^n$ will become a constant vector, that is, all components of the vector will be the same, which will appear as a horizontal line in the denisty plot.
             
-            In the <a href="#proof_ctr">Appendix B</a>, a proof will be provided that, when $q(x)$ and $\alpha$ satisfy some conditions, the posterior transform is a strict Contraction Mapping.
+            For a one-dimensional discrete Markov chain, the convergence rate is inversely related to the absolute value of the second largest eigenvalue of the transition probability matrix ($\lvert \lambda_2 \rvert$). The smaller $\lvert \lambda_2 \rvert$ is, the faster the convergence. Numerous experiments have shown that $\alpha$ has a clear linear relationship with $\lvert \lambda_2 \rvert$; the smaller $\alpha$ is, the smaller $\lvert \lambda_2 \rvert$ is. Therefore, <b>the smaller $\alpha$ (the greater the noise), the faster the convergence rate</b>. Specifically, when $\alpha \to 0$, according to the conclusion in <a href="#posterior">Section 3</a>, the posterior probability distributions corresponding to different $z$ tend to be consistent. Additionally, according to Theorem 21 in <a href="#non_neg_lambda">[21]</a>, $\lvert \lambda_2 \rvert$ is smaller than the L1 distance between any two posterior probability distributions corresponding to different $z$, so it can be concluded that $\lvert \lambda_2 \rvert \to 0$.
             
-            The relationship between the converged distribution and the input distribution q(x) cannot be rigorously proven at present. 
             
+            </br>
             <h3 style="font-size:18px"> Anti-noise Capacity In Restoring Data Distribution</h3>
-            From the above analysis, we know that when certain conditions are satisfied, the <em>posterior transform</em> is a contraction mapping. Therefore, the following relationship exists: 
-            \begin{align}
-                dist(q(x),\ q_o(x)) < dist(q(z),\ q_i(z))         \tag{7.12}
-            \end{align}
-            Wherein, $q(z)$ is the ideal input distribution, $q(x)$ is the ideal output distribution, $q_i(x)$ is any arbitrary input distribution, and $q_o(x)$ is the output distribution obtained after transforming $q_i(z)$. 
             
-            The above equation indicates that the distance between the output distribution $q_o(x)$ and the ideal output distribution q(x) will always be <b>less than</b> the distance between the input distribution $q_i(z)$ and the ideal input distribution q(x). Hence, the <em>posterior transform</em> has certain resistance to noise. This means that during the process of restoring $q(x)$(<a href="#backward_process">Section 5</a>), even if the <em>tail distribution</em> $q(z_T)$ contains some error, the error of the outputed distribution $q(x)$ will be smaller than the error of input after undergoing a series of transform.
+            From the above analysis, it can be seen that, in most cases, the <b>posterior transform</b> is a shrinking mapping, which means the following relationship
+            
+            \begin{align}
+                d(q(x),\ q_o(x)) < d(q(z),\ q_i(z))         \tag{7.12}
+            \end{align}
+            
+            Among them, $q(z)$ is the ideal input distribution, $q(x)$ is the ideal output distribution, $q(x) = \int q(x|z) q(z) dz$, $q_i(z)$ is any input distribution, and $q_o(x)$ is the transformed output distribution, $q_o(x) = \int q(x|z) q_i(z) dz$.
+            
+            The above equation indicates that the distance between the output distribution $q_o(x)$ and the ideal output distribution q(x) will always be <b>less than</b> the distance between the input distribution $q_i(z)$ and the ideal input distribution q(x). Hence, <b>the posterior transform naturally possesses a certain ability to resist noise </b>. This means that during the process of restoring $q(x)$(<a href="#backward_process">Section 5</a>), even if the <em>tail distribution</em> $q(z_T)$ contains some error, the error of the outputed distribution $q(x)$ will be smaller than the error of input after undergoing a series of transform.
             
             Refer specifically to <a href="#demo_3_2">Demo 3.2</a>, where by increasing the value of the <b>noise ratio</b>, noise can be added to the <em>tail distribution</em> $q(z_T)$. Clicking the "apply" button will gradually draw out the restoring process, with the restored distribution represented by a $\textcolor{red}{\text{red curve}}$, and the error size will be computed by the JS divergence. You will see that the error of restored $q(x)$ is always less than the error of $q(z_T)$.
             
-            From the above discussion, we know that the smaller the $\alpha$ (the larger the noise used in the transform process), the greater the contractive ratio of the contraction mapping, and thus, the stronger the ability to resist noise.
+            From the above discussion, it can be seen that the smaller $\alpha$ is (the larger the noise used in the transform), the greater the shrinking rate of the shrink mapping, and correspondingly, the stronger the error resistance capability. Specifically, when $\alpha \to 0$, the noise resistance capability becomes infinite, meaning that regardless of the magnitude of the error in the input, the output will always be $q(x)$.
             
+            </br>
+            <h3 style="font-size:18px"> Markov Chain Monte Carlo Sampling</h3>
+            
+            In DPM models, sampling is typically performed using <b>Ancestral Sampling</b>. From the analysis above, it can be inferred that when $\alpha$ is sufficiently small, the posterior transform will converge to $q(x)$. Therefore, sampling can be conducted using <b>Markov Chain Monte Carlo</b> (MCMC) methods, as depicted in Figure 7.1. In the figure, $\alpha$ represents a posterior transform with relatively large noise, where larger noise makes the steady-state distribution closer to the data distribution $q(x)$. However, as discussed in Section 3, posterior transform with larger noise are less favorable for fitting. Therefore, transform with larger noise are split into multiple transform with smaller noise.
+            
+            <center> <img src="file/7.1.png" width="1024" style="margin-top:12px"/> </center>
+            <center> Figure 7.1: Markov Chain Monte Carlo Sampling</center>
+
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_posterior_transform_en")
     return
 
@@ -370,7 +403,8 @@ def md_cond_kl_en():
         gr.Markdown(
             r"""
             This section mainly introduces the relationship between <b>KL divergence</b> and <b>conditional KL divergence</b>. Before the formal introduction, we will briefly introduce the definitions of <b>Entropy</b> and <b>Conditional Entropy</b>, as well as the inequality relationship between them, in preparation for the subsequent proof. 
-
+            
+            </br>
             <h3 style="font-size:20px">Entropy and Conditional Entropy</h3>
             For any two random variables $Z, X$, the <b>Entropy</b> is defined as follows<a href="#entropy">[16]</a>：
             \begin{align}
@@ -385,7 +419,8 @@ def md_cond_kl_en():
                \mathbf{H}(Z|X) \le \mathbf{H}(Z)         \tag{A.3}
             \end{align}
             It is to say that <b>the Conditional Entropy is always less than or equal to the Entropy</b>, and they are equal only when X and Z are independent. The proof of this relationship can be found in the literature <a href="#cond_entropy">[17]</a>.
-
+            
+            </br>
             <h3 style="font-size:20px">KL Divergence and Conditional KL Divergence</h3>
             In the same manner as the definition of Conditional Entropy, we introduce a new definition, <b>Conditional KL Divergence</b>, denoted as $KL_{\mathcal{C}}$. Since KL Divergence is non-symmetric, there exist two forms as follows. 
             \begin{align}
@@ -434,12 +469,12 @@ def md_cond_kl_en():
             Another <b>important conclusion</b> can be drawn from equation A.15.
 
             The KL Divergence is often used to fit the distribution of data. In this scenario, the distribution of the data is denoted by $q(z)$ and the parameterized model distribution is denoted by $\textcolor{blue}{p_\theta(z)}$. During the optimization process, since both $q(z|x)$ and $q(x)$ remain constant, the term $\mathbf{H}(Z) - \mathbf{H}(Z|X)$ in Equation A.15 is a constant. Thus, the following relationship is obtained:
-            <span id="zh_cond_kl_2">
+            <span id="en_cond_kl_2">
                 \mathop{\min}{underline}{\textcolor{blue}{p_\theta}}  KL(q(z) \Vert \textcolor{blue}{p_\theta(z)})  \iff  \mathop{\min}{underline}{\textcolor{blue}{p_\theta}} \int \ q(x) KL(q(z|x) \Vert \textcolor{blue}{p_\theta(z)})dx   \tag{A.25}
             </span>
 
             Comparing the above relationship with <b>Denoised Score Matching</b> <a href="#dsm">[18]</a>(equation A.26), some similarities can be observed. Both introduce a new variable $X$, and substitute the targeted fitting distribution q(z) with q(z|x). After the substitution, since q(z|x) is a conditional probability distribution, both consider all conditions and perform a weighted sum using the probability of the conditions occurring, $q(x)$, as the weight coefficient.
-            <span id="zh_cond_kl_3">
+            <span id="en_cond_kl_3">
                 \mathop{\min}{underline}{\textcolor{blue}{\psi_\theta}} \frac{1}{2} \int q(z) \left\lVert \textcolor{blue}{\psi_\theta(z)} - \frac{\partial q(z)}{\partial z} \right\rVert^2 dz \iff  \mathop{\min}{underline}{\textcolor{blue}{\psi_\theta}} \int q(x)\ \overbrace{\frac{1}{2} \int q(z|x) \left\lVert \textcolor{blue}{\psi_\theta(z)} - \frac{\partial q(z|x)}{\partial z} \right\rVert^2 dz}^{\text{Score Matching of }q(z|x)}\ dx      \tag{A.26}
             </span>
 
@@ -451,72 +486,273 @@ def md_cond_kl_en():
     return
 
 
-def md_proof_ctr_en():
+def md_approx_gauss_en():
     global g_latex_del
 
-    title = "Appendix B Proof of Contraction"
-    with gr.Accordion(label=title, elem_classes="first_md", elem_id="proof_ctr"):
+    title = "Appendix B When does the Posterior Approximate to Gaussian ?"
+    with gr.Accordion(label=title, elem_classes="first_md", elem_id="approx_gauss"):
         gr.Markdown(
             r"""
-            <center> <img id="en_fig2" src="file/fig2.png" width="960" style="margin-top:12px"/> </center>
-            <center> Figure 2: Only one component in support </center>
-            
-            The following will prove that with some conditions, the posterior transform is a contraction mapping, and there exists a unique point, which is also the converged point.
-             
-            The proof will be divided into several cases, and assumes that the random variable is discrete, so the posterior transform can be regarded as a single step transition of a <b>discrete Markov Chain</b>. The posterior $q(x|z)$ corresponds to the <b>transfer matrix</b>. Continuous variables can be considered as discrete variables with infinite states.
-            <ol style="list-style-type:decimal">
-            <li> When $q(x)$ is greater than 0, the posterior transform matrix $q(x|z)$ will be greater than 0 too. Therefore, this matrix is the transition matrix of an $\textcolor{red}{\text{irreducible}}\ \textcolor{green}{\text{aperiodic}}$ Markov Chain. According to the conclusion of the literature <a href="#mc_basic_p6">[13]</a>, this transformation is a contraction mapping with respect to Total Variance metric. Therefore, according to the Banach fixed-point theorem, this transformation has a unique fixed point(converged point). </li>
-             
-            <li> When $q(x)$ is partially greater than 0, and the support of $q(x)$ (the region where $q(x)$ is greater than 0) consists only one connected component (Figure 2), several conclusions can be drawn from equation (3.4)：
-            
-            <ol style="list-style-type:lower-alpha; padding-inline-start: 0px;font-size:16px;">
-            <li> When $z$ and $x$ are within the support set, since both $q(x)$ and GaussFun are greater than 0, the diagonal elements of the transfer matrix $\{q(x|z)|z=x\}$ are greater than 0. This means that the state within the support set is $\textcolor{green}{\text{aperiodic}}$. </li>
-            
-            <li> When $z$ and $x$ are within the support set, since GaussFun's support set has a certain range, elements above and below the diagonal $\{q(x|z)|x=z+\epsilon\}$is also greater than 0. This means that states within the support set are accessible to each other, forming a $\textcolor{red}{\text{Communication Class}}$<a href="#mc_basic_d4">[14]</a>, see in Figure 2b. </li>
-                
-            <li> When <em>$z$ is within the support set</em> and <em>$x$ is outside the support set</em>, ${q(x|z)}$ is entirely 0. This means that the state within the support set is <em>inaccessible</em> to the state outside the support set (Inaccessible Region in Figure 2b) </li>
-                
-            <li> When <em>$z$ is outside the support set</em> and <em>$x$ is inside the support set</em>, due to the existence of a certain range of the support set of GaussFun, there are some extension areas (Extension Region in Figure 2b), where the corresponding $\{q(x|z)|x \in support\}$ is not all zero. This means that the state of this part of the extension area can <em>unidirectionally</em> access the state inside the support set (Unidirectional Region in Figure 2b).</li>
-                
-            <li> When <em>$z$ is outside the support set</em> and <em>$x$ is outside the support set</em>, the corresponding $q(x|z)$ is entirely zero. This implies that, states outside the support set will not transit to states outside the support set. In other words, states outside the support set only originate from states within the support set. </li>
-            
-            </ol>
-            <p style="margin-top:8px">
-            From (c), we know that states within the support set will not transition to states outside of the support set. From (a) and (b), we know that the states within the support set are non-periodic and form a Communicate Class. Therefore, the states within the support set independently form an irreducible and non-periodic Markov Chain. According to the conclusion of Theorem 11.4.1 in reference <a href="#mc_limit">[7]</a>, as $n\to\infty$, $q(x|z)^n$ will converge to a constant matrix, with each column vector in the matrix being identical. This implies that for different values of z, $q(x|z)^n$ are the same (as seen in Figure 2c). In Addition, according to (d) and (e), there exist some states z, which are outside of the support set, that can transition into the support set and will carry information from within the support set back to the outside. Thus, the corresponding $q(x|z)^n$ for these z states (the $q(x|z_{ex})$ region in Figure 2c) will equal the corresponding $q(x|z)^n$ in the support set (the $q(x|z_{sup})$ region in Figure 2c).
-            </p>
-            
-            <p style="margin-top:8px">
-            Therefore, it can be concluded that when the state is confined within the support set and two extension regions, $\lim_{n\to\infty}{q(x|z)^n}$ will converge to a fixed matrix, and each column vector is identical. Hence, for any input distribution, if posterior transforms are continuously applied, it will eventually converge to a fixed distribution, which is equal to the column vector of the converged matrix. Based on the conclusion from the literature <a href=\"#fp_converse\">[9]</a>, when a iterative transform converges to a unique fixed point, this transform is a Contraction Mapping with respect to a certain metric. 
-            </p>
+            From equation 3.4, it can be seen that $q(x|z)$ takes the following form:
+            \begin{align}
+                q(x|z)  &=  \operatorname{Normalize} \Big(\  \frac{1}{\sqrt{2\pi}\sigma}\exp{\frac{-(x-\mu)^2}{2\sigma^2}}\ q(x)\ \Big)& \qquad &\text{where}\ \mu=\frac{z}{\sqrt{\alpha}}\quad \sigma=\sqrt{\frac{1-\alpha}{\alpha}}       \tag{B.1}   \newline
+                &\propto \underbrace{\frac{1}{\sqrt{2\pi}\sigma}\exp{\frac{-(x-\mu)^2}{2\sigma^2}}}_{\text{GaussFun}}\ q(x)     \tag{B.2}
+            \end{align}
+
+            Below we will prove that if the following two assumptions are satisfied, $q(x|z)$ approximates a Gaussian distribution.
+            <ul>
+            <li>
+            Assume that within the support of GaussFun, $q(x)$ undergoes linear changes. Expand $q(x)$ around the mean of GaussFun using a Taylor series. According to the properties of Taylor expansion, these assumptions can be satisfied when the standard deviation $\sigma$ of GaussFun is sufficiently small.
+            \begin{align}
+                q(x) &\approx  q(\mu) + \nabla_xq(\mu)(x-\mu)& \quad &\text{where}\quad q(\mu)\triangleq q(x)\bigg|_{x=\mu} \quad \nabla_xq(\mu)\triangleq \nabla_xq(x)\bigg|_{x=\mu}       \tag{B.3}   \newline
+                      &= q(\mu)\big(1+ \frac{\nabla_xq(\mu)}{q(\mu)}(x-\mu)\big)&	    \tag{B.4}   \newline
+                      &= q(\mu)\big(1+ \nabla_x\log{q(\mu)}(x-\mu)\big)& \quad &\text{where}\quad \nabla_x\log{q(\mu)}\triangleq \nabla_x\log{q(x)}\bigg|_{x=\mu}       \tag{B.5}
+            \end{align}
             </li>
+            <li>
+            Assuming within the support of GaussFun, $\log\big(1+\nabla_x\log{q(\mu)}(x-\mu)\big)$ can be approximated by $\nabla_x\log{q(\mu)}(x-\mu)$. By expanding $\log(1+y)$ using Taylor series, according to the properties of Taylor expansion, when $\lVert y\rVert_2$ is small, $\log(1+y)$ can be approximated by $y$. When $\sigma$ is sufficiently small, $\lVert x-u\rVert_2$ will be small, and $\nabla_x\log{q(\mu)}(x-\mu)$will also be small, hence the above assumption can be satisfied. Generally, when $\nabla_x\log{q(\mu)}(x-\mu)<0.1$, the approximation error is small enough to be negligible.
+            \begin{align}
+                \log(1+y) &\approx \log(1+y)\bigg|_{y=0} + \nabla_y\log(1+y)\bigg|_{y=0}(y-0)       \tag{B.6}   \newline
+                          &= y              \tag{B.7}
+            \end{align}
+            </li>
+            </ul>
+            Using the above two assumptions, $q(x|z)$ can be transformed into the following form：
+
+            \begin{align}
+                q(x|z) &\propto \frac{1}{\sqrt{2\pi}\sigma}\exp{\frac{-(x-\mu)^2}{2\sigma^2}}\ q(x)        \tag{B.8}   \newline
+                       &\approx \frac{1}{\sqrt{2\pi}\sigma}\exp{\frac{-(x-\mu)^2}{2\sigma^2}}\  q(\mu)\big(1+ \nabla_x\log{q(\mu)}(x-\mu)\big)          \tag{B.9}   \newline
+                       &= \frac{q(\mu)}{\sqrt{2\pi}\sigma}\exp\left(\frac{-(x-\mu)^2}{2\sigma^2}+\log\big(1+ \nabla_x\log{q(\mu)}(x-\mu)\big)\right)    \tag{B.10}  \newline
+                       &\approx \frac{q(\mu)}{\sqrt{2\pi}\sigma}\exp\left(\frac{-(x-\mu)^2}{2\sigma^2}+\nabla_x\log{q(\mu)}(x-\mu)\right)               \tag{B.11}  \newline
+                       &= \frac{q(\mu)}{\sqrt{2\pi}\sigma}\exp\left(-\frac{(x-\mu)^2-2\sigma^2\nabla_x\log{q(\mu)}(x-\mu)}{2\sigma^2}\right)            \tag{B.12}  \newline
+                       &= \frac{q(\mu)}{\sqrt{2\pi}\sigma}\exp\left(-\frac{\big(x-\mu-\sigma^2\nabla_x\log{q(\mu)}\big)^2}{2\sigma^2}+\frac{\big(\sigma^2\nabla_x\log{q(\mu)}\big)^2}{2\sigma^2}\right)             \tag{B.13}   \newline
+                       &= \exp\left(-\frac{\big(x-\mu-\sigma^2\nabla_x\log{q(\mu)}\big)^2}{2\sigma^2}\right) \underbrace{\frac{q(\mu)}{\sqrt{2\pi}\sigma} \exp\left( \frac{1}{2}\big(\sigma\nabla_x\log{q(\mu)}\big)^2\right)}_{\text{const}}       \tag{B.14}
+            \end{align}
+
+            Among them, Equation B.9 applies the conclusion of Assumption 1, and Equation B.11 applies the conclusion of Assumption 2. 
+
+            The <em>const term</em> in Equation B.14 is constant and does not affect the shape of the function. Additionally, as can be seen from the above, $q(x|z)$ is self-normalizing. Therefore, $q(x|z)$ is a Gaussian probability density function with a mean of $\mu + \sigma^2 \nabla_x \log{q(\mu)}$ and a variance of $\sigma^2$.
+            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_approx_gauss_en")
+
+    return
+
+
+def md_non_expanding_en():
+    global g_latex_del
+
+    title = "Appendix C Posterior Transform is a Non-expanding Mapping"
+    with gr.Accordion(label=title, elem_classes="first_md", elem_id="non_expanding"):
+        gr.Markdown(
+            r"""
+            <b>Corollary 1</b>
+
+            Using KL Divergence as a metric, the transition transform of Markov chain is non-expanding<a href="#elem">[23]</a>, which means
+            \begin{align}
+                KL\big(p(x), q(x)\big) &\le KL\big(p(z), q(z)\big)          \tag{C.1} \newline
+            \end{align}
+            Here, $p(z)$ and $q(z)$ are arbitrary probability density functions, and $r(x|z)$ is the transition probability density function of the Markov chain. We have $p(x) = \int r(x|z)p(z)dz$ and $q(x) = \int r(x|z)q(z)dz$. 
+
+            Proof：
+
+            For the KL divergence of $p(x,z)$ and $q(x,z)$, the following relationship exists:
+            \begin{align}
+                KL\big(p(x,z), q(x,z)\big) &= \iint p(x,z)\log \frac{p(x,z)}{q(x,z)}dxdz    \tag{C.2} \newline
+                & = \iint p(x,z)\log \frac{p(x)p(x|z)}{q(x)q(x|z)}dxdz                      \tag{C.3} \newline
+                &= \iint p(x,z)\log \frac{p(x)}{q(x)}dxdz + \iint p(x,z) \log\frac{p(x|z)}{q(x|z)} dxdz     \tag{C.4} \newline
+                &= \int \int p(x,z) dz\ \log \frac{p(x)}{q(x)}dx + \int p(z)\int p(x|z) \log\frac{p(x|z)}{q(x|z)} dx\ dz    \tag{C.5} \newline
+                &= KL\big(p(x), q(x)\big) + \int p(z) KL\big(p(x|z), q(x|z)\big)dz      \tag{C.6} \newline
+            \end{align}
+
+            Similarly, by swapping the order of $Z$ and $X$, the following relationship can be obtaine:
+            \begin{align}
+                KL\big(p(x,z), q(x,z)\big) &= KL\big(p(z), q(z)\big) + \int p(x) KL\big(p(z|x), q(z|x)\big)dx       \tag{C.7}
+            \end{align}
+
+            Comparing the two equations, we can obtain:
+            \begin{align}
+                KL\big(p(z), q(z)\big) + \int p(x) KL\big(p(z|x), q(z|x)\big)dx =  KL\big(p(x), q(x)\big) + \int p(z) KL\big(p(x|z), q(x|z)\big)dz      \tag{C.8}
+            \end{align}
+
+            Since $q(x|z)$ and $p(x|z)$ are both transition probability densities of the Markov chain, equal to $r(x|z)$, the integral $\int p(z) KL\big(p(x|z), q(x|z)\big)dz$ equals 0. Therefore, the above equation simplifies to:
+            \begin{align}
+                KL\big(p(x), q(x)\big) = KL\big(p(z), q(z)\big) - \int p(x) KL\big(p(z|x), q(z|x)\big)dx            \tag{C.9}
+            \end{align}
+
+            Since KL divergence is always greater than or equal to 0, the weighted sum $\int p(x) KL\big(p(z|x), q(z|x)\big)dx$ is also greater than or equal to 0. Therefore, we can conclude:
+            \begin{align}
+                KL\big(p(x), q(x)\big) \le KL\big(p(z), q(z)\big)                   \tag{C.10}
+            \end{align}
+
+            </br>
+
+            The condition for the above equation to hold is that $\int p(x) KL\big(p(z|x), q(z|x)\big)dx$ equals 0, which requires that for different conditions $x$, $p(z|x)$ and $q(z|x)$ must be equal. In most cases, when $p(z)$ and $q(z)$ are different, $p(z|x)$ and $q(z|x)$ are also different. This means that in most cases, we have
+            \begin{align}
+                KL\big(p(x), q(x)\big) < KL\big(p(z), q(z)\big)         \tag{C.11}
+            \end{align}
+
+            </br></br>
+            <b>Corollary 2</b>
+
+            Using Total Variance (L1 distance) as a metric, the transition transform of a Markov chain is non-expanding, which means  
+            \begin{align}
+                \left\lVert p(x)-q(x) \right\rVert_1\ &\le\ \left\lVert p(z) - q(z) \right\rVert_1  \tag{C.12}
+            \end{align}
+
+            Here, $p(z)$ and $q(z)$ are arbitrary probability density functions, and $r(x|z)$ is the transition probability density function of a Markov chain. We have $p(x) = \int r(x|z)p(z)dz$ and $q(x) = \int r(x|z) q(z) dz$.
+
+            Proof：
+            \begin{align}
+                \left\lVert p(x)-q(x) \right\rVert_1\ &= \int \big\lvert p(x) - q(x) \big\rvert dx  \tag{C.13} \newline
+                &=  \int \left\lvert \int r(x|z) p(z) dz - \int r(x|z)q(z)dz \right\rvert dx        \tag{C.14} \newline
+                &=  \int \left\lvert \int r(x|z) \big(p(z)-q(z)\big) dz \right\rvert dx             \tag{C.15} \newline
+                &\le \int \int r(x|z) \left\lvert \big(p(z)-q(z)\big) \right\rvert dz dx	        \tag{C.16} \newline
+                &= \int \int r(x|z)dx \left\lvert \big(p(z)-q(z)\big) \right\rvert dz               \tag{C.17} \newline
+                &= \int \left\lvert \big(p(z)-q(z)\big) \right\rvert dz                             \tag{C.18} \newline
+                &= \left\lVert p(z) - q(z) \right\rVert_1                                           \tag{C.19}
+            \end{align}
+
+            Here, Equation C.16 applies the Absolute Value Inequality, while Equation C.18 utilizes the property of $r(x|z)$ being a probability distribution. 
+
+            Proof completed.
+
+            </br>
+
+            Figure C.1 shows an example of a one-dimensional random variable, which can help better understand the derivation process described above. 
             
-            <li> When $q(x)$ is partially greater than 0, and multiple connected component exist in the support set of $q(x)$, and the maximum distance of each connected component <b>can</b> be covered by the support set of corresponding GaussFun, the states within each connected domain <b>constitute only one Communicate Class</b>. As shown in Figure 3, $q(x)$ has two connected component. On the edge of the first component, the support set of GaussFun corresponding to $q(x|z=-0.3)$ can span the gap to reach the second component, so the states of the first component can <em>access</em> the states of the second component. On the edge of the second component, the support set of GaussFun corresponding to $q(x|z=0)$ can also span the gap to reach the first. Thus, the states of the second component can <em>access</em> the states of the first component, so these two component form a Communicate Class. Therefore, similar to the case with a single component, when states are confined to each component, gaps, and extension areas, the posterior transform has a unique iterative convergence point, which is a contraction mapping with respect to a certain metric. </li>
+            The condition for the above equation to hold is that all non-zero terms inside the absolute value brackets have the same sign. As shown in Figure C.1(a), there are five absolute value brackets, each corresponding to a row, with five terms in each bracket. The above equation holds if and only if all non-zero terms in each row have the same sign. If different signs occur, this will lead to $\lVert p(x)-q(x) \rVert_1\ <\ \lVert p(z) - q(z) \rVert_1$. The number of different signs is related to the nonzero elements of the transition probability matrix. In general, the more nonzero elements there are, the more different signs there will be.
+
+            For the posterior transform, generally, when $\alpha$ decreases (more noise), the transition probability density function will have more nonzero elements, as shown in Figure C.2(a); whereas when $\alpha$ increases (less noise), the transition probability density function will have fewer nonzero elements, as shown in Figure C.2(b).
             
-            <li> When $q(x)$ is partially greater than 0, and multiple connected component exist in the support set of $q(x)$, and the maximum distance of each connected component <b>cannot</b> be covered by the support set of corresponding GaussFun, the states within each component <b>constitute multiple Communicate Classes</b>, as shown in Figure 4. Under such circumstances, as $n\to\infty$, $q(x|z)^n$ will also converge to a fixed matrix, but not all the column vectors are identical. Therefore, the posterior transforma is not a strict contraction mapping. However, when the state of the input distribution is confined to a single Communicate Class and its corresponding extension, the posterior transform is also a contraction mapping with a unique convergence point. </li>
+            So, there is a feature: <b>when $\alpha$ decreases, it leads to $\lVert p(x)-q(x) \rVert_1$ being smaller than $\lVert p(z) - q(z) \rVert_1$, which means the shrinking rate of the posterior transform is larger.</b>
+            
+            <center> <img src="file/C1.png" width="1024" style="margin-top:12px"/> </center>
+            <center> Figure C.1: Non-expanding under L1 norm  </center>
+            </br>
+            <center> <img src="file/C2.png" width="568" style="margin-top:12px"/> </center>
+            <center> Figure C.2: More non-zero elements as $\alpha$ gets smaller </center>
+            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_non_expanding_en")
+
+    return
+
+
+def md_stationary_en():
+    global g_latex_del
+
+    title = "Appendix D Posterior Transform Converges to the Unique Stationary Distribution"
+    with gr.Accordion(label=title, elem_classes="first_md", elem_id="stationary"):
+        gr.Markdown(
+            r"""
+            According to the conclusion of Theorem 3 in <a href="#mc_basic_t3">[19]</a>, <b>an aperiodic and irreducible Markov chain will converge to a unique stationary distribution</b>. 
+
+            The following will show that under certain conditions, the posterior transform is the transition probability density function of an <b>aperiodic and irreducible Markov chain</b>. 
+
+            For convenience, the forward transform of the diffusion model is described below in a more general form.
+            \begin{align}
+                Z = \sqrt{\alpha}X + \sqrt{\beta}\ \epsilon     \tag{D.1} \newline
+            \end{align}
+
+            As described in <a href="#transform">Section 1</a>, $\sqrt{\alpha}X$ narrows the probability density function of $X$, so $\alpha$ controls the narrowing intensity, while $\beta$ controls the amount of noise added(smoothing). When $\beta = 1 - \alpha$, the above transform is consistent with the equation 1.1.
+            
+            The form of the posterior probability distribution corresponding to the new transformation is as follows:
+            \begin{align}
+                q(x|z=c)  =  \operatorname{Normalize} \Big(\  \overbrace{\frac{1}{\sqrt{2\pi}\sigma}\exp{\frac{-(x-\mu)^2}{2\sigma^2}}}^{\text{GaussFun}}\ q(x)\ \Big)  \tag{D.2} \newline
+                 \text{where}\ \mu=\frac{c}{\sqrt{\alpha}}\qquad \sigma=\sqrt{\frac{\beta}{\alpha}} \qquad \text{$c$ is a fixed value}  \notag
+            \end{align}
+
+            When $\beta = 1 - \alpha$, the above transform is consistent with the equation 3.4.
+
+            For convenience, let $g(x)$ represent GaussFun in Equation D.2.
+
+            Since $\sqrt{\alpha}X$ narrows the probability density function $q(x)$ of $X$, this makes the analysis of the aperiodicity and irreducibility of the transition probability density function $q(x|z)$ more complex. Therefore, for the sake of analysis, we first assume $\alpha = 1$ and later analyze the case when $\alpha \neq 1$ and $\beta = 1 - \alpha$.
+
+            <center> <img src="file/D1.png" width="960" style="margin-top:12px"/> </center>
+            <center> Figure D.1: Only one component in support </center>
+
+            <center> <img src="file/D2.png" width="960" style="margin-top:12px"/> </center>
+            <center> Figure D.2: One component which can communicate with each other </center>
+
+            </br>
+            <h3 style="font-size:24px"> $\alpha=1$ </h3>
+
+            When $\alpha=1$, if $q(x)$ and $\beta$ satisfy either of the following two conditions, the Markov chain corresponding to $q(x|z)$ is aperiodic and irreducible. 
+
+            <ol style="list-style-type:decimal">
+            <li>If the support of $q(x)$ contains only one connected component.</li>
+            <li>If the support of $q(x)$ has multiple connected components, but the distance between each connected component is less than $3$ times $\sigma$. In other words, the gaps can be covered by the radius of the effective region of $g(x)$.</li>
             </ol>
+
+            Proof：
+
+            <ol style="list-style-type:decimal">
+            <li>
+            For any point $c$ in the support of $q(x)$, when $z=c$ and $x=c$, $q(x=c)>0$; from Equation D.2, we know that the center of $g(x)$ is located at $c$, so $g(x)$ is also greater than 0 at $x=c$. Therefore, according to characteristics of multiplication in the equation D.2, $q(x=c|z=c)>0$. Hence, the Markov chain corresponding to $q(x|z)$ is aperiodic. 
+
+            For any point $c$ in the support of $q(x)$, when $z=c$, the center of $g(x)$ is located at $c$, so there exists a hypersphere with $c$ as its center ($\lVert x-c\rVert_2 < \delta$). Within this hypersphere, $q(x|z=c)>0$, which means that state $c$ can access nearby states. Since every state in the support has this property, all states within the entire support form a $\textcolor{red}{\text{Communicate Class}}$ <a href="#mc_basic_d4">[14]</a>. Therefore, the Markov chain corresponding to $q(x|z)$ is irreducible.
             
-            <center> <img id="en_fig3" src="file/fig3.png" width="960" style="margin-top:12px"/> </center>
-            <center> Figure 3: Two components which can communicate with each other </center>
+            Therefore, a Markov chain that satisfies condition 1 is aperiodic and irreducible. See the example in Figure D.1, which illustrates a single connected component 
+            </li>
+
+            <li>
+            When the support set of $q(x)$ has multiple connected components, the Markov chain may have multiple communicate classes. However, if the gaps between components are smaller than $3\sigma$(standard deviation of $g(x)$), the states of each component can access each other. Thus, the Markov chain corresponding to $q(x|z)$ will have only one communicate class, similar to the case in condition 1. Therefore, a Markov chain that satisfies condition 2 is aperiodic and irreducible.
             
-            <center> <img id="en_fig4" src="file/fig4.png" width="960" style="margin-top:12px"/> </center>
-            <center> Figure 4: Two components which <b>cannot</b> communicate with each other </center>
+            In Figure D.2, an example of multiple connected components is shown.
+            </li>
+            </ol>
+
+            <center> <img src="file/D3.png" width="960" style="margin-top:12px"/> </center>
+            <center> Figure D.3: Two component which <b>cannot</b> communicate with each other </center>
+
+            </br>
+            <h3 style="font-size:24px"> $\alpha \neq 1$ </h3>
+
+            When $\alpha \neq 1$, for any point $c$ within the support of $q(x)$, it follows from Equation D.2 that the center of $g(x)$ is no longer $c$ but rather $\frac{c}{\sqrt{\alpha}}$. That is to say, the center of $g(x)$ deviates from $c$, with the deviation distance being $\lVert c\rVert(\frac{1-\sqrt{\alpha}}{\sqrt{\alpha}})$. It can be observed that the larger $\lVert c\rVert$ is, the greater the deviation. See the examples in Figures D.4(c) and D.4(d) for specifics. In Figure D.4(d), when $z=2.0$, the center of $g(x)$ is noticeably offset from $x=2.0$. This phenomenon is referred to in this article as <b>the Center Deviation Phenomenon</b>.
             
-            Additionally, there exists a more generalized relation about the posterior transform that is independent of $q(x|z)$: the Total Variance distance between two output distributions will always be <b>less than or equal to</b> the Total Variance distance between their corresponding input distributions, that is
+            The <b>Center Deviation Phenomenon</b> will affect the properties of some states in the Markov chain.
+
+            When the deviation distance is significantly greater than $3\sigma$, $g(x)$ may be zero at $x = c$ and its vicinity. Consequently, $q(x=c|z=c)$ may also be zero, and $q(x|z=c)$ in the vicinity of $x = c$ may also be zero. Therefore, state $c$ may not be able to access nearby states and may be periodic. This is different from the case when $\alpha=1$. Refer to the example in Figure D.5: the $\textcolor{green}{\text{green curve}}$ represents $g(x)$ for $z=6.0$, and the $\textcolor{orange}{\text{orange curve}}$ represents $q(x|z=6.0)$. Because the center of $g(x)$ deviates too much from $x=6.0$, $q(x=6.0|z=6.0)=0$.
+            
+            When the deviation distance is significantly less than $3\sigma$, $g(x)$ is non-zero at $x = c$ and its vicinity. Consequently, $q(x=c|z=c)$ will not be zero, and $q(x|z=c)$ in the vicinity of $x = c$ will also not be zero. Therefore, state $c$ can access nearby states and is aperiodic.
+            
+            Under what conditions for $c$ will the deviation distance of the center of $g(x)$ be less than $3\sigma$?
+             
             \begin{align}
-                dist(q_{o1}(x),\ q_{o2}(x)) <= dist(q_{i1}(z),\ q_{i2}(z))    \tag{B.1}
+                \lVert c\rVert(\frac{1-\sqrt{\alpha}}{\sqrt{\alpha}})\ <\  3\frac{\sqrt{\beta}}{\sqrt{\alpha}} \qquad \Rightarrow \qquad \lVert c\rVert \ <\ 3\frac{\sqrt{\beta}}{1-\sqrt{\alpha}}      \tag{D.3} \newline
             \end{align}
-            The proof is given below in discrete form:
+
+            From the above, it is known that there exists an upper limit such that as long as $\lVert c\rVert$ is less than this upper limit, the deviation amount will be less than $3\sigma$. 
+
+            When $\beta=1-\alpha$, the above expression becomes
             \begin{align}
-                      \lVert q_{o1}-q_{o2}\rVert_{TV} &= \lVert Q_{x|z}q_{i1} - Q_{x|z}q_{i2}\rVert_{TV}                                                                                                                    \tag{B.2}         \newline
-                                                      &=   \sum_{m}\textcolor{red}{|}\sum_{n}Q_{x|z}(m,n)q_{i1}(n) - \sum_{n}Q_{x|z}(m,n)q_{i2}(n)\textcolor{red}{|}                                                        \tag{B.3}         \newline
-                                                      &=   \sum_{m}\textcolor{red}{|}\sum_{n}Q_{x|z}(m,n)(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}                                                                          \tag{B.4}         \newline
-                                                      &\leq \sum_{m}\sum_{n}Q_{x|z}(m,n)\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}             \qquad \qquad \qquad \text{Absolute value inequality}       \tag{B.5}         \newline
-                                                      &=   \sum_{n}\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|} \sum_{m} Q_{x|z}(m,n)            \qquad \qquad \qquad \sum_{m} Q_{x|z}(m,n) = 1              \tag{B.6}         \newline
-                                                      &=   \sum_{n}\textcolor{red}{|}(q_{i1}(n) - q_{i2}(n))\textcolor{red}{|}                                                                                              \tag{B.7}
+                \lVert c\rVert \ <\ 3\frac{\sqrt{1-\alpha}}{1-\sqrt{\alpha}}    \tag{D.4} \newline
             \end{align}
-            In this context, $Q_{x|z}(m,n)$ represents the element at the m-th row and n-th column of the matrix $Q_{x|z}$, and $q_{i1}(n)$ represents the n-th element of the vector $q_{i1}$.
-                     
-            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_proof_ctr_en")
+
+            $3\frac{\sqrt{1-\alpha}}{1-\sqrt{\alpha}}$ has a strictly monotonically decreasing relationship with $\alpha$. 
+
+            When $\alpha \in (0, 1)$，
+            \begin{align}
+                3\frac{\sqrt{1-\alpha}}{1-\sqrt{\alpha}} > 3        \tag{D.5} \newline
+            \end{align}
+
+            Based on the analysis above, the following conclusion can be drawn
+
+            <ol style="list-style-type:decimal">
+            <li>
+            <b>If the support of $q(x)$ contains only one connected component, and the points of the support set are all within a distance less than $3\frac{\sqrt{1-\alpha}}{1-\sqrt{\alpha}}$ from the origin, then the Markov chain corresponding to $q(x|z)$ will be aperiodic and irreducible.</b>
+            </li>
+
+            <li>
+            If the support of $q(x)$ contains multiple connected components, the accurate determination of whether two components can access each other becomes more complex due to the Center Deviation Phenomenon of $g(x)$. Here, we won't delve into further analysis. But just give a conservative conclusion: <b>If the points of the support are all within a distance less than $1$ from the origin, and the gaps between each connected component are all less than $2\sigma$, then the Markov chain corresponding to $q(x|z)$ will be aperiodic and irreducible.</b>
+            </li>
+            </ol>
+
+            <center> <img src="file/D4.png" width="1280" style="margin-top:12px"/> </center>
+            <center> Figure D.4: Center Deviation of the GaussFun </center>
+            </br>
+            <center> <img src="file/D5.png" width="568" style="margin-top:12px"/> </center>
+            <center> Figure D.5: Deviation is More Than $3\sigma$ </center>
+
+            """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_stationary_en")
+
     return
 
 
@@ -524,7 +760,6 @@ def md_reference_en():
     global g_latex_del
 
     with gr.Accordion(label="Reference", elem_classes="first_md", elem_id="reference"):
-
         gr.Markdown(
             r"""
             <a id="dpm" href="https://arxiv.org/abs/1503.03585"> [1] Deep Unsupervised Learning Using Nonequilibrium Thermodynami </a>
@@ -542,21 +777,37 @@ def md_reference_en():
             <a id="mc_limit" href="https://stats.libretexts.org/Bookshelves/Probability_Theory/Book%3A_Introductory_Probability_(Grinstead_and_Snell)/11%3A_Markov_Chains/11.04%3A_Fundamental_Limit_Theorem_for_Regular_Chains"> [7] Fundamental Limit Theorem for Regular Chains </a>
 
             <a id="mc_basic_p6" href="http://galton.uchicago.edu/~lalley/Courses/312/MarkovChains.pdf"> [8] Markov Chain:Basic Theory - Proposition 6 </a>
-            
+
             <a id="fp_converse" href="https://arxiv.org/abs/1702.07339"> [9] A Converse to Banach's Fixed Point Theorem and its CLS Completeness </a>
 
             <a id="ce_kl" href="https://en.wikipedia.org/wiki/Cross-entropy#Cross-entropy_minimization"> [10] Cross-entropy minimization </a>
-            
+
             <a id="deconv_1" href="https://thewolfsound.com/deconvolution-inverse-convolution/"> [11] Deconvolution Using Frequency-Domain Division </a>
-            
+
             <a id="deconv_2" href="https://www.strollswithmydog.com/deconvolution-by-division-in-the-frequency-domain/"> [12] deconvolution-by-division-in-the-frequency-domain </a>
-            
+
             <a id="mc_basic_t7" href="http://galton.uchicago.edu/~lalley/Courses/312/MarkovChains.pdf"> [13] Markov Chain:Basic Theory - Theorem 7 </a>
-            
+
             <a id="mc_basic_d4" href="http://galton.uchicago.edu/~lalley/Courses/312/MarkovChains.pdf"> [14] Markov Chain:Basic Theory - Definition 4 </a>
-            
+
             <a id="vdm" href="https://arxiv.org/pdf/2107.00630"> [15] Variational Diffusion Models </a>
-             
+
+            <a id="entropy" href="https://en.wikipedia.org/wiki/Entropy"> [16] Entropy </a>
+
+            <a id="cond_entropy" href="https://en.wikipedia.org/wiki/Conditional_entropy"> [17] Conditional Entropy </a>
+
+            <a id="dsm" href="https://www.iro.umontreal.ca/~vincentp/Publications/smdae_techreport_1358_v1.pdf"> [18] A Connection Between Score Matching and Denoising autoencoders </a>
+
+            <a id="mc_basic_t3" href="http://galton.uchicago.edu/~lalley/Courses/312/MarkovChains.pdf"> [19] Markov Chain:Basic Theory - Theorem 3 </a>
+
+            <a id="mc_mt_lambda" href="https://pages.uoregon.edu/dlevin/MARKOV/markovmixing.pdf"> [20] Markov Chains and Mixing Times, second edition - 12.2 The Relaxation Time </a>
+
+            <a id="non_neg_lambda" href="https://link.springer.com/book/10.1007/0-387-32792-4"> [21] Non-negative Matrices and Markov Chains - Theorem 2.10 </a>
+
+            <a id="prml_mcmc" href="https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf"> [22] Pattern Recognition and Machine Learning - 11.2. Markov Chain Monte Carlo </a>
+            
+            <a id="elem" href="https://cs-114.org/wp-content/uploads/2015/01/Elements_of_Information_Theory_Elements.pdf"> [23] Elements_of_Information_Theory_Elements - 2.9 The Second Law of Thermodynamics </a>
+
             """, latex_delimiters=g_latex_del, elem_classes="normal mds", elem_id="md_reference_en")
 
     return
@@ -603,7 +854,11 @@ def run_app():
         
         md_cond_kl_en()
         
-        md_proof_ctr_en()
+        md_approx_gauss_en()
+    
+        md_non_expanding_en()
+    
+        md_stationary_en()
         
         md_reference_en()
         
