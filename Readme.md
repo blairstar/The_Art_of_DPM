@@ -65,3 +65,18 @@ It is written in Chinese. English version will be released in the future.
 		+ 3.4.9 DPM模型的独特之处  
 		+ 3.4.10 是否可通过“逆卷积”恢复数据分布q(x)  
 	- 3.5 融合DPM模型和VAE模型  
+
+<br />
+<br />
+<br />
+<br />
+
+<center>
+	<h1 style="display:block">
+		Understanding Diffusion Probability Model<span style='color: orange'>&nbsp;Interactively </span>
+    </h1>
+</center>
+</br>
+
+
+![DPMInteractiveLetter](DPMInteractive/DPMInteractive.png)
