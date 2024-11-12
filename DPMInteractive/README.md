@@ -20,3 +20,5 @@ This is a Web App which provides a special introduction about the Diffusion Prob
 </ol>
 
 
+![DPMInteractiveLetter](DPMInteractive.png)
+
